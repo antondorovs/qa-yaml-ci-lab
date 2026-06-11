@@ -1,0 +1,29 @@
+version: 1
+suite: checkout-smoke
+owner: qa-automation
+environment: staging
+tests:
+  - id: CHK-001
+    title: Complete checkout with a valid card
+    priority: critical
+    type: smoke
+    tags:
+      - checkout
+      - payment
+    steps:
+      - Open the cart with an available product
+      - Continue to checkout
+      - Submit valid delivery and payment details
+    expected: The order is created and a confirmation number is displayed
+  - id: CHK-002
+    title: Reject checkout with an expired card
+    priority: high
+    type: regression
+    tags:
+      - checkout
+      - validation
+    steps:
+      - Open the checkout page
+      - Enter an expired payment card
+      - Submit the order
+    expected: The order is not created and the payment error is displayed

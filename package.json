@@ -1,0 +1,21 @@
+{
+  "name": "qa-yaml-ci-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A practical YAML quality gate for QA-oriented CI/CD examples.",
+  "type": "module",
+  "scripts": {
+    "format:check": "prettier --check README.md package.json .github .gitlab-ci.yml examples k8s schemas scripts test",
+    "validate": "node scripts/validate-yaml.mjs",
+    "test": "node --test",
+    "check": "npm run format:check && npm run validate && npm test"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "prettier": "3.8.4",
+    "yaml": "2.9.0"
+  }
+}
