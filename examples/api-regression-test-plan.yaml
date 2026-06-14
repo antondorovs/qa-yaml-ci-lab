@@ -1,0 +1,29 @@
+version: 1
+suite: catalog-api-regression
+owner: qa-automation
+environment: staging
+tests:
+  - id: API-101
+    title: Return an available product by identifier
+    priority: critical
+    type: api
+    tags:
+      - catalog
+      - contract
+    steps:
+      - Send GET /api/products/sku-1001
+      - Verify the response status is 200
+      - Validate the response body against the product contract
+    expected: The response contains the requested product with its current price
+  - id: API-102
+    title: Reject a product request with an unknown identifier
+    priority: high
+    type: regression
+    tags:
+      - catalog
+      - negative
+    steps:
+      - Send GET /api/products/unknown-sku
+      - Verify the response status is 404
+      - Validate the error code and message
+    expected: The response reports that the requested product does not exist

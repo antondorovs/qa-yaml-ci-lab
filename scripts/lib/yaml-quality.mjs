@@ -17,12 +17,14 @@ const ignoredDirectories = new Set([
 
 const contractDefinitions = [
   {
-    path: "examples/qa-test-plan.yaml",
+    matches: (repositoryPath) =>
+      repositoryPath.startsWith("examples/") &&
+      repositoryPath.endsWith("-test-plan.yaml"),
     name: "qa-test-plan",
     schema: "schemas/qa-test-plan.schema.json",
   },
   {
-    path: "k8s/smoke-test-job.yaml",
+    matches: (repositoryPath) => repositoryPath === "k8s/smoke-test-job.yaml",
     name: "kubernetes-smoke-job",
     schema: "schemas/kubernetes-smoke-job.schema.json",
   },
@@ -60,7 +62,7 @@ async function loadContracts(root) {
   for (const definition of contractDefinitions) {
     const schemaPath = path.join(root, definition.schema);
     const schema = JSON.parse(await readFile(schemaPath, "utf8"));
-    contracts.set(definition.path, {
+    contracts.set(definition.matches, {
       name: definition.name,
       validate: ajv.compile(schema),
     });
@@ -103,7 +105,9 @@ export async function validateRepository(root = projectRoot) {
       continue;
     }
 
-    const contract = contracts.get(repositoryPath);
+    const contract = [...contracts.entries()].find(([matches]) =>
+      matches(repositoryPath),
+    )?.[1];
 
     if (contract && !contract.validate(document.toJS())) {
       errors.push(

@@ -12,7 +12,7 @@ Schema contracts to QA-specific examples.
 - YAML syntax across the repository
 - duplicate mapping keys
 - formatting with Prettier
-- QA test plan structure and required fields
+- QA test plan structure and required fields for every named test plan
 - a compact Kubernetes smoke-test Job contract
 - the same quality gate in GitHub Actions and GitLab CI
 
@@ -51,6 +51,7 @@ npm test
 ```text
 .
 |-- .github/workflows/quality-gate.yml
+|-- examples/api-regression-test-plan.yaml
 |-- examples/qa-test-plan.yaml
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
@@ -77,6 +78,7 @@ Schema failures include the contract and JSON path:
 examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required property 'expected'
 ```
 
-Add new general YAML files anywhere outside ignored directories. To apply a
-schema contract to another example type, register its repository-relative path
-in `scripts/lib/yaml-quality.mjs`.
+Add new general YAML files anywhere outside ignored directories. Files matching
+`examples/*-test-plan.yaml` automatically use the QA test plan contract. To
+apply a different schema contract, register its path matcher in
+`scripts/lib/yaml-quality.mjs`.

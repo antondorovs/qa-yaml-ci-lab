@@ -44,11 +44,14 @@ async function withFixture(run) {
   }
 }
 
-test("validates every repository YAML file and both contracts", async () => {
+test("validates every repository YAML file and registered contracts", async () => {
   const result = await validateRepository(projectRoot);
 
   assert.equal(result.errors.length, 0);
   assert(result.files.some((file) => file.endsWith("qa-test-plan.yaml")));
+  assert(
+    result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
 });
 
@@ -101,6 +104,28 @@ test("rejects a QA test plan that violates its contract", async () => {
         (error) =>
           error.includes("qa-test-plan contract") &&
           error.includes("required property 'expected'"),
+      ),
+    );
+  });
+});
+
+test("applies the QA contract to every named test plan", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const testPlanPath = path.join(
+      fixtureRoot,
+      "examples",
+      "api-regression-test-plan.yaml",
+    );
+    const source = await readFile(testPlanPath, "utf8");
+    await writeFile(testPlanPath, source.replace("priority: critical", ""));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("api-regression-test-plan.yaml") &&
+          error.includes("required property 'priority'"),
       ),
     );
   });
