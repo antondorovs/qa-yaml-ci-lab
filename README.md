@@ -15,6 +15,7 @@ Schema contracts to QA-specific examples.
 - QA test plan structure and required fields for every named test plan
 - a compact Kubernetes smoke-test Job contract
 - the same quality gate in GitHub Actions and GitLab CI
+- a portable JSON validation report stored as a CI artifact
 
 The Kubernetes contract is intentionally focused on this lab. It complements,
 but does not replace, validation against a real Kubernetes API server.
@@ -36,6 +37,12 @@ Run the complete quality gate:
 
 ```bash
 npm run check
+```
+
+Generate the same JSON report used by CI:
+
+```bash
+npm run validate -- --report reports/yaml-quality.json
 ```
 
 Run an individual check:
@@ -77,6 +84,10 @@ Schema failures include the contract and JSON path:
 ```text
 examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required property 'expected'
 ```
+
+GitHub Actions and GitLab CI retain `reports/yaml-quality.json` for 14 days.
+The report includes the result status, checked repository paths and validation
+errors without machine-specific absolute paths.
 
 Add new general YAML files anywhere outside ignored directories. Files matching
 `examples/*-test-plan.yaml` automatically use the QA test plan contract. To

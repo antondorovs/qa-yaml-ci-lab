@@ -5,7 +5,10 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { validateRepository } from "../scripts/lib/yaml-quality.mjs";
+import {
+  createValidationReport,
+  validateRepository,
+} from "../scripts/lib/yaml-quality.mjs";
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(testDirectory, "..");
@@ -53,6 +56,21 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
   );
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
+});
+
+test("creates a portable validation report", async () => {
+  const result = await validateRepository(projectRoot);
+  const report = createValidationReport(result, projectRoot);
+
+  assert.equal(report.version, 1);
+  assert.equal(report.status, "passed");
+  assert.deepEqual(report.summary, {
+    filesChecked: result.files.length,
+    errors: 0,
+  });
+  assert(report.files.includes("examples/api-regression-test-plan.yaml"));
+  assert(report.files.every((file) => !path.isAbsolute(file)));
+  assert.deepEqual(report.errors, []);
 });
 
 test("reports YAML syntax errors with the repository path", async () => {

@@ -8,7 +8,8 @@
     "format:check": "prettier --check README.md package.json .github .gitlab-ci.yml examples k8s schemas scripts test",
     "validate": "node scripts/validate-yaml.mjs",
     "test": "node --test",
-    "check": "npm run format:check && npm run validate && npm test"
+    "check": "npm run format:check && npm run validate && npm test",
+    "check:ci": "npm run format:check && npm run validate -- --report reports/yaml-quality.json && npm test"
   },
   "engines": {
     "node": ">=24"

@@ -82,6 +82,19 @@ function formatSchemaError(file, contractName, error) {
   return `${file}: ${contractName} contract ${instancePath} ${error.message}`;
 }
 
+export function createValidationReport(result, root = projectRoot) {
+  return {
+    version: 1,
+    status: result.errors.length === 0 ? "passed" : "failed",
+    summary: {
+      filesChecked: result.files.length,
+      errors: result.errors.length,
+    },
+    files: result.files.map((file) => toRepositoryPath(root, file)),
+    errors: result.errors,
+  };
+}
+
 export async function validateRepository(root = projectRoot) {
   const files = await collectYamlFiles(root);
   const contracts = await loadContracts(root);

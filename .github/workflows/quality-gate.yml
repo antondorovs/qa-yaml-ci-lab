@@ -31,4 +31,13 @@ jobs:
         run: npm ci
 
       - name: Run quality gate
-        run: npm run check
+        run: npm run check:ci
+
+      - name: Upload YAML validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yaml-quality-report
+          path: reports/yaml-quality.json
+          if-no-files-found: warn
+          retention-days: 14
