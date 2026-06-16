@@ -9,7 +9,9 @@
     "validate": "node scripts/validate-yaml.mjs",
     "test": "node --test",
     "check": "npm run format:check && npm run validate && npm test",
-    "check:ci": "npm run format:check && npm run validate -- --report reports/yaml-quality.json && npm test"
+    "check:ci": "npm run format:check && npm run validate -- --report reports/yaml-quality.json && npm test",
+    "docker:build": "docker build --tag qa-yaml-ci-lab:local .",
+    "docker:check": "npm run docker:build && docker run --rm qa-yaml-ci-lab:local"
   },
   "engines": {
     "node": ">=24"

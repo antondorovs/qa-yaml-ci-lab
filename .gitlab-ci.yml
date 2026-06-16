@@ -26,3 +26,22 @@ yaml_quality:
     expire_in: 14 days
     paths:
       - reports/yaml-quality.json
+
+docker_quality:
+  stage: quality
+  image: docker:28-cli
+  services:
+    - docker:28-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  timeout: 15 minutes
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+      allow_failure: true
+  script:
+    - docker build --tag qa-yaml-ci-lab:ci .
+    - docker run --rm qa-yaml-ci-lab:ci

@@ -16,6 +16,7 @@ Schema contracts to QA-specific examples.
 - a compact Kubernetes smoke-test Job contract
 - the same quality gate in GitHub Actions and GitLab CI
 - a portable JSON validation report stored as a CI artifact
+- Docker based execution for the same local quality gate
 
 The Kubernetes contract is intentionally focused on this lab. It complements,
 but does not replace, validation against a real Kubernetes API server.
@@ -24,6 +25,7 @@ but does not replace, validation against a real Kubernetes API server.
 
 - Node.js 24 LTS
 - npm
+- Docker, optional for container-based checks
 
 ## Run Locally
 
@@ -37,6 +39,12 @@ Run the complete quality gate:
 
 ```bash
 npm run check
+```
+
+Run the same checks in Docker:
+
+```bash
+npm run docker:check
 ```
 
 Generate the same JSON report used by CI:
@@ -57,7 +65,9 @@ npm test
 
 ```text
 .
+|-- Dockerfile
 |-- .github/workflows/quality-gate.yml
+|-- .dockerignore
 |-- examples/api-regression-test-plan.yaml
 |-- examples/qa-test-plan.yaml
 |-- k8s/smoke-test-job.yaml
@@ -88,6 +98,10 @@ examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required pr
 GitHub Actions and GitLab CI retain `reports/yaml-quality.json` for 14 days.
 The report includes the result status, checked repository paths and validation
 errors without machine-specific absolute paths.
+
+The GitHub workflow runs the Docker quality image automatically. The GitLab
+pipeline includes the same Docker check as a manual job for runners configured
+with Docker-in-Docker.
 
 Add new general YAML files anywhere outside ignored directories. Files matching
 `examples/*-test-plan.yaml` automatically use the QA test plan contract. To

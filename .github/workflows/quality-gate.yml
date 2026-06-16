@@ -41,3 +41,18 @@ jobs:
           path: reports/yaml-quality.json
           if-no-files-found: warn
           retention-days: 14
+
+  docker-quality:
+    name: Validate Docker quality image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Build QA quality image
+        run: docker build --tag qa-yaml-ci-lab:ci .
+
+      - name: Run quality gate in Docker
+        run: docker run --rm qa-yaml-ci-lab:ci
