@@ -24,6 +24,12 @@ const contractDefinitions = [
     schema: "schemas/qa-test-plan.schema.json",
   },
   {
+    matches: (repositoryPath) =>
+      repositoryPath === "examples/environment-matrix.yaml",
+    name: "environment-matrix",
+    schema: "schemas/environment-matrix.schema.json",
+  },
+  {
     matches: (repositoryPath) => repositoryPath === "k8s/smoke-test-job.yaml",
     name: "kubernetes-smoke-job",
     schema: "schemas/kubernetes-smoke-job.schema.json",

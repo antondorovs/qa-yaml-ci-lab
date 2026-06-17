@@ -55,6 +55,7 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
   );
+  assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
 });
 
@@ -144,6 +145,28 @@ test("applies the QA contract to every named test plan", async () => {
         (error) =>
           error.includes("api-regression-test-plan.yaml") &&
           error.includes("required property 'priority'"),
+      ),
+    );
+  });
+});
+
+test("rejects an environment matrix without a base URL", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const matrixPath = path.join(
+      fixtureRoot,
+      "examples",
+      "environment-matrix.yaml",
+    );
+    const source = await readFile(matrixPath, "utf8");
+    await writeFile(matrixPath, source.replace("name: BASE_URL", "name: URL"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("environment-matrix contract") &&
+          error.includes("must contain at least 1 valid item"),
       ),
     );
   });

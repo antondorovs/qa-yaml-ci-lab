@@ -1,0 +1,23 @@
+version: 1
+owner: qa-automation
+environments:
+  - name: staging
+    variables:
+      - name: BASE_URL
+        value: https://staging.example.test
+        scope: runtime
+        required: true
+      - name: REPORT_FORMAT
+        value: json
+        scope: reporting
+        required: true
+  - name: production
+    variables:
+      - name: BASE_URL
+        value: https://example.test
+        scope: runtime
+        required: true
+      - name: REPORT_FORMAT
+        value: html
+        scope: reporting
+        required: true
