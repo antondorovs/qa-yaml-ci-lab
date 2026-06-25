@@ -56,6 +56,7 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
   );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
+  assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
 });
 
@@ -166,6 +167,28 @@ test("rejects an environment matrix without a base URL", async () => {
       result.errors.some(
         (error) =>
           error.includes("environment-matrix contract") &&
+          error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects pipeline stages without a report stage", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const stagesPath = path.join(
+      fixtureRoot,
+      "examples",
+      "pipeline-stages.yaml",
+    );
+    const source = await readFile(stagesPath, "utf8");
+    await writeFile(stagesPath, source.replace("name: report", "name: smoke"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("pipeline-stages contract") &&
           error.includes("must contain at least 1 valid item"),
       ),
     );

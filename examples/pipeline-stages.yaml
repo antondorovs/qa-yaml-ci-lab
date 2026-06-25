@@ -1,0 +1,25 @@
+version: 1
+owner: qa-automation
+stages:
+  - name: quality
+    purpose: Validate YAML syntax, formatting and schema contracts
+    jobs:
+      - yaml_quality
+      - docker_quality
+    required: true
+  - name: smoke
+    purpose: Run a fast checkout smoke suite against the target environment
+    jobs:
+      - checkout_smoke
+    required: true
+  - name: regression
+    purpose: Run API and UI regression suites before release approval
+    jobs:
+      - api_regression
+      - ui_regression
+    required: true
+  - name: report
+    purpose: Publish validation reports and test evidence for reviewers
+    jobs:
+      - publish_reports
+    required: true

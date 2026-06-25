@@ -14,6 +14,7 @@ Schema contracts to QA-specific examples.
 - formatting with Prettier
 - QA test plan structure and required fields for every named test plan
 - environment variable matrix structure and required runtime URLs
+- pipeline stage structure for quality, smoke, regression and reporting
 - a compact Kubernetes smoke-test Job contract
 - the same quality gate in GitHub Actions and GitLab CI
 - a portable JSON validation report stored as a CI artifact
@@ -71,11 +72,13 @@ npm test
 |-- .dockerignore
 |-- examples/api-regression-test-plan.yaml
 |-- examples/environment-matrix.yaml
+|-- examples/pipeline-stages.yaml
 |-- examples/qa-test-plan.yaml
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
 |   |-- environment-matrix.schema.json
 |   |-- kubernetes-smoke-job.schema.json
+|   |-- pipeline-stages.schema.json
 |   `-- qa-test-plan.schema.json
 |-- scripts/
 |   |-- lib/yaml-quality.mjs
@@ -100,6 +103,8 @@ examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required pr
 
 Environment matrices must define a `BASE_URL` variable for each supported
 environment so CI jobs and Kubernetes examples can share the same target names.
+Pipeline stage examples must include quality, smoke, regression and report
+stages so the lab keeps a complete QA release flow.
 
 GitHub Actions and GitLab CI retain `reports/yaml-quality.json` for 14 days.
 The report includes the result status, checked repository paths and validation
