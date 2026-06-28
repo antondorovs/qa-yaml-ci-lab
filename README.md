@@ -16,6 +16,7 @@ Schema contracts to QA-specific examples.
 - environment variable matrix structure and required runtime URLs
 - pipeline stage structure for quality, smoke, regression and reporting
 - a compact Kubernetes smoke-test Job contract
+- a scheduled Kubernetes regression CronJob with overlap protection
 - the same quality gate in GitHub Actions and GitLab CI
 - a portable JSON validation report stored as a CI artifact
 - Docker based execution for the same local quality gate
@@ -74,9 +75,11 @@ npm test
 |-- examples/environment-matrix.yaml
 |-- examples/pipeline-stages.yaml
 |-- examples/qa-test-plan.yaml
+|-- k8s/regression-cronjob.yaml
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
 |   |-- environment-matrix.schema.json
+|   |-- kubernetes-regression-cronjob.schema.json
 |   |-- kubernetes-smoke-job.schema.json
 |   |-- pipeline-stages.schema.json
 |   `-- qa-test-plan.schema.json
@@ -105,6 +108,8 @@ Environment matrices must define a `BASE_URL` variable for each supported
 environment so CI jobs and Kubernetes examples can share the same target names.
 Pipeline stage examples must include quality, smoke, regression and report
 stages so the lab keeps a complete QA release flow.
+The regression CronJob uses `concurrencyPolicy: Forbid` so a delayed nightly
+run cannot overlap with the next schedule.
 
 GitHub Actions and GitLab CI retain `reports/yaml-quality.json` for 14 days.
 The report includes the result status, checked repository paths and validation

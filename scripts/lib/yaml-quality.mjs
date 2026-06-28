@@ -40,6 +40,12 @@ const contractDefinitions = [
     name: "kubernetes-smoke-job",
     schema: "schemas/kubernetes-smoke-job.schema.json",
   },
+  {
+    matches: (repositoryPath) =>
+      repositoryPath === "k8s/regression-cronjob.yaml",
+    name: "kubernetes-regression-cronjob",
+    schema: "schemas/kubernetes-regression-cronjob.schema.json",
+  },
 ];
 
 function toRepositoryPath(root, filePath) {

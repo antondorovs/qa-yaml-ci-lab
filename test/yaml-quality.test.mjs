@@ -58,6 +58,7 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
+  assert(result.files.some((file) => file.endsWith("regression-cronjob.yaml")));
 });
 
 test("creates a portable validation report", async () => {
@@ -210,6 +211,31 @@ test("rejects a Kubernetes Job that violates its contract", async () => {
       result.errors.some(
         (error) =>
           error.includes("kubernetes-smoke-job contract") &&
+          error.includes("must be equal to constant"),
+      ),
+    );
+  });
+});
+
+test("rejects overlapping Kubernetes regression schedules", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const cronJobPath = path.join(
+      fixtureRoot,
+      "k8s",
+      "regression-cronjob.yaml",
+    );
+    const source = await readFile(cronJobPath, "utf8");
+    await writeFile(
+      cronJobPath,
+      source.replace("concurrencyPolicy: Forbid", "concurrencyPolicy: Allow"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("kubernetes-regression-cronjob contract") &&
           error.includes("must be equal to constant"),
       ),
     );
