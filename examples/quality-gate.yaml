@@ -1,0 +1,11 @@
+version: 1
+gate:
+  minimumPassRate: 98
+  maximumFailedTests: 2
+  maximumFlakyTests: 3
+  requiredSuites:
+    - smoke
+    - regression
+  blockOnSeverities:
+    - critical
+    - high

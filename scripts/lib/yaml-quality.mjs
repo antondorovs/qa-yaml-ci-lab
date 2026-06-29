@@ -36,6 +36,12 @@ const contractDefinitions = [
     schema: "schemas/pipeline-stages.schema.json",
   },
   {
+    matches: (repositoryPath) =>
+      repositoryPath === "examples/quality-gate.yaml",
+    name: "quality-gate",
+    schema: "schemas/quality-gate.schema.json",
+  },
+  {
     matches: (repositoryPath) => repositoryPath === "k8s/smoke-test-job.yaml",
     name: "kubernetes-smoke-job",
     schema: "schemas/kubernetes-smoke-job.schema.json",

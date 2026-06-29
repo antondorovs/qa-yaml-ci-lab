@@ -57,6 +57,7 @@ test("validates every repository YAML file and registered contracts", async () =
   );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
+  assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
   assert(result.files.some((file) => file.endsWith("regression-cronjob.yaml")));
 });
@@ -191,6 +192,27 @@ test("rejects pipeline stages without a report stage", async () => {
         (error) =>
           error.includes("pipeline-stages contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects a release gate with a low pass rate", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const gatePath = path.join(fixtureRoot, "examples", "quality-gate.yaml");
+    const source = await readFile(gatePath, "utf8");
+    await writeFile(
+      gatePath,
+      source.replace("minimumPassRate: 98", "minimumPassRate: 90"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("quality-gate contract") &&
+          error.includes("must be >= 95"),
       ),
     );
   });

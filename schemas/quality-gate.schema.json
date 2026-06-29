@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/quality-gate.schema.json",
+  "title": "QA release quality gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "gate"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumPassRate",
+        "maximumFailedTests",
+        "maximumFlakyTests",
+        "requiredSuites",
+        "blockOnSeverities"
+      ],
+      "properties": {
+        "minimumPassRate": {
+          "type": "integer",
+          "minimum": 95,
+          "maximum": 100
+        },
+        "maximumFailedTests": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "maximumFlakyTests": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "requiredSuites": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["smoke", "regression", "api", "e2e"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "smoke"
+              }
+            },
+            {
+              "contains": {
+                "const": "regression"
+              }
+            }
+          ]
+        },
+        "blockOnSeverities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "contains": {
+            "const": "critical"
+          }
+        }
+      }
+    }
+  }
+}
