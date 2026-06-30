@@ -16,6 +16,7 @@ Schema contracts to QA-specific examples.
 - environment variable matrix structure and required runtime URLs
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
+- test report formats, paths, retention and publishing rules
 - a compact Kubernetes smoke-test Job contract
 - a scheduled Kubernetes regression CronJob with overlap protection
 - the same quality gate in GitHub Actions and GitLab CI
@@ -77,6 +78,7 @@ npm test
 |-- examples/pipeline-stages.yaml
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
+|-- examples/test-report-policy.yaml
 |-- k8s/regression-cronjob.yaml
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
@@ -85,7 +87,8 @@ npm test
 |   |-- kubernetes-smoke-job.schema.json
 |   |-- pipeline-stages.schema.json
 |   |-- quality-gate.schema.json
-|   `-- qa-test-plan.schema.json
+|   |-- qa-test-plan.schema.json
+|   `-- test-report-policy.schema.json
 |-- scripts/
 |   |-- lib/yaml-quality.mjs
 |   `-- validate-yaml.mjs
@@ -113,6 +116,8 @@ Pipeline stage examples must include quality, smoke, regression and report
 stages so the lab keeps a complete QA release flow.
 The release quality gate requires at least a 95 percent pass rate, smoke and
 regression suites, and critical-severity blocking.
+The test report policy requires JUnit and HTML artifacts, repository-relative
+paths and retention between 1 and 30 days.
 The regression CronJob uses `concurrencyPolicy: Forbid` so a delayed nightly
 run cannot overlap with the next schedule.
 

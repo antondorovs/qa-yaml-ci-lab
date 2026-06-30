@@ -1,0 +1,12 @@
+version: 1
+artifacts:
+  - name: junit-results
+    format: junit
+    path: reports/junit.xml
+    retentionDays: 14
+    publish: always
+  - name: html-report
+    format: html
+    path: reports/html
+    retentionDays: 14
+    publish: on-failure

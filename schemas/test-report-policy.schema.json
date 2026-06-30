@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/test-report-policy.schema.json",
+  "title": "QA test report policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "artifacts"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["format"],
+            "properties": {
+              "format": {
+                "const": "junit"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["format"],
+            "properties": {
+              "format": {
+                "const": "html"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "format", "path", "retentionDays", "publish"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "format": {
+          "enum": ["junit", "html", "json"]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "publish": {
+          "enum": ["always", "on-failure"]
+        }
+      }
+    }
+  }
+}
