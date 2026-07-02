@@ -14,6 +14,7 @@ Schema contracts to QA-specific examples.
 - formatting with Prettier
 - QA test plan structure and required fields for every named test plan
 - environment variable matrix structure and required runtime URLs
+- flaky-test rerun and quarantine rules
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
 - test report formats, paths, retention and publishing rules
@@ -75,6 +76,7 @@ npm test
 |-- .dockerignore
 |-- examples/api-regression-test-plan.yaml
 |-- examples/environment-matrix.yaml
+|-- examples/flaky-test-policy.yaml
 |-- examples/pipeline-stages.yaml
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
@@ -83,6 +85,7 @@ npm test
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
 |   |-- environment-matrix.schema.json
+|   |-- flaky-test-policy.schema.json
 |   |-- kubernetes-regression-cronjob.schema.json
 |   |-- kubernetes-smoke-job.schema.json
 |   |-- pipeline-stages.schema.json
@@ -112,6 +115,8 @@ examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required pr
 
 Environment matrices must define a `BASE_URL` variable for each supported
 environment so CI jobs and Kubernetes examples can share the same target names.
+Flaky tests can be rerun only for transient failures and must leave quarantine
+within 30 days with an assigned owner and issue.
 Pipeline stage examples must include quality, smoke, regression and report
 stages so the lab keeps a complete QA release flow.
 The release quality gate requires at least a 95 percent pass rate, smoke and

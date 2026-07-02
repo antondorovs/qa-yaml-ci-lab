@@ -1,0 +1,12 @@
+version: 1
+rerun:
+  maxAttempts: 2
+  onlyOn:
+    - timeout
+    - network
+    - browser-crash
+quarantine:
+  maxDays: 14
+  requireOwner: true
+  requireIssue: true
+  failOnExpired: true
