@@ -1,0 +1,14 @@
+version: 1
+environments:
+  - name: staging
+    minimumApprovals: 0
+    requiredChecks:
+      - smoke
+    freezeOnFailure: false
+  - name: production
+    minimumApprovals: 2
+    requiredChecks:
+      - smoke
+      - regression
+      - release-quality
+    freezeOnFailure: true

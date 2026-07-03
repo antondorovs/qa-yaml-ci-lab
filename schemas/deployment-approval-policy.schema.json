@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/deployment-approval-policy.schema.json",
+  "title": "QA deployment approval policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "environments"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "environments": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/environment"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "staging"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": [
+              "name",
+              "minimumApprovals",
+              "requiredChecks",
+              "freezeOnFailure"
+            ],
+            "properties": {
+              "name": {
+                "const": "production"
+              },
+              "minimumApprovals": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "requiredChecks": {
+                "type": "array",
+                "contains": {
+                  "const": "regression"
+                }
+              },
+              "freezeOnFailure": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "minimumApprovals",
+        "requiredChecks",
+        "freezeOnFailure"
+      ],
+      "properties": {
+        "name": {
+          "enum": ["staging", "production"]
+        },
+        "minimumApprovals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["smoke", "regression", "release-quality"]
+          },
+          "contains": {
+            "const": "smoke"
+          }
+        },
+        "freezeOnFailure": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

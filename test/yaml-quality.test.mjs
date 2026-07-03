@@ -55,6 +55,11 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
   );
+  assert(
+    result.files.some((file) =>
+      file.endsWith("deployment-approval-policy.yaml"),
+    ),
+  );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
@@ -172,6 +177,31 @@ test("rejects an environment matrix without a base URL", async () => {
         (error) =>
           error.includes("environment-matrix contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects production deployment without enough approvals", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "deployment-approval-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("minimumApprovals: 2", "minimumApprovals: 1"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("deployment-approval-policy contract") &&
+          error.includes("must be >= 2"),
       ),
     );
   });

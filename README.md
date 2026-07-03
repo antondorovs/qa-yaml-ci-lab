@@ -13,6 +13,7 @@ Schema contracts to QA-specific examples.
 - duplicate mapping keys
 - formatting with Prettier
 - QA test plan structure and required fields for every named test plan
+- deployment approval rules for staging and production
 - environment variable matrix structure and required runtime URLs
 - flaky-test rerun and quarantine rules
 - pipeline stage structure for quality, smoke, regression and reporting
@@ -75,6 +76,7 @@ npm test
 |-- .github/workflows/quality-gate.yml
 |-- .dockerignore
 |-- examples/api-regression-test-plan.yaml
+|-- examples/deployment-approval-policy.yaml
 |-- examples/environment-matrix.yaml
 |-- examples/flaky-test-policy.yaml
 |-- examples/pipeline-stages.yaml
@@ -84,6 +86,7 @@ npm test
 |-- k8s/regression-cronjob.yaml
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
+|   |-- deployment-approval-policy.schema.json
 |   |-- environment-matrix.schema.json
 |   |-- flaky-test-policy.schema.json
 |   |-- kubernetes-regression-cronjob.schema.json
@@ -115,6 +118,8 @@ examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required pr
 
 Environment matrices must define a `BASE_URL` variable for each supported
 environment so CI jobs and Kubernetes examples can share the same target names.
+Production deployments require regression checks, two approvals and automatic
+freezing when a required check fails.
 Flaky tests can be rerun only for transient failures and must leave quarantine
 within 30 days with an assigned owner and issue.
 Pipeline stage examples must include quality, smoke, regression and report
