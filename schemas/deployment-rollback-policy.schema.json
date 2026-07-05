@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/deployment-rollback-policy.schema.json",
+  "title": "QA deployment rollback policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "triggers", "thresholds", "rollback", "verification"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "triggers": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["health-check-failure", "error-rate", "latency"]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "health-check-failure"
+          }
+        },
+        {
+          "contains": {
+            "const": "error-rate"
+          }
+        }
+      ]
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxErrorRatePercent", "consecutiveHealthFailures"],
+      "properties": {
+        "maxErrorRatePercent": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "consecutiveHealthFailures": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automatic", "target"],
+      "properties": {
+        "automatic": {
+          "const": true
+        },
+        "target": {
+          "const": "previous-stable"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeoutMinutes", "requiredChecks"],
+      "properties": {
+        "timeoutMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["health", "smoke", "regression"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "health"
+              }
+            },
+            {
+              "contains": {
+                "const": "smoke"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

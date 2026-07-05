@@ -1,0 +1,15 @@
+version: 1
+triggers:
+  - health-check-failure
+  - error-rate
+thresholds:
+  maxErrorRatePercent: 5
+  consecutiveHealthFailures: 3
+rollback:
+  automatic: true
+  target: previous-stable
+verification:
+  timeoutMinutes: 10
+  requiredChecks:
+    - health
+    - smoke

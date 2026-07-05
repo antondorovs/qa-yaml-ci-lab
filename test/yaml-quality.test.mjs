@@ -60,6 +60,11 @@ test("validates every repository YAML file and registered contracts", async () =
       file.endsWith("deployment-approval-policy.yaml"),
     ),
   );
+  assert(
+    result.files.some((file) =>
+      file.endsWith("deployment-rollback-policy.yaml"),
+    ),
+  );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
@@ -202,6 +207,31 @@ test("rejects production deployment without enough approvals", async () => {
         (error) =>
           error.includes("deployment-approval-policy contract") &&
           error.includes("must be >= 2"),
+      ),
+    );
+  });
+});
+
+test("rejects deployment rollback without automatic recovery", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "deployment-rollback-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("automatic: true", "automatic: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("deployment-rollback-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });
