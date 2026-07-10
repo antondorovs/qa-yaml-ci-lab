@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/notification-policy.schema.json",
+  "title": "QA notification policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "channels", "escalation"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "channels": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/channel"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["requiredSeverities"],
+            "properties": {
+              "requiredSeverities": {
+                "type": "array",
+                "contains": {
+                  "const": "critical"
+                }
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["events"],
+            "properties": {
+              "events": {
+                "type": "array",
+                "contains": {
+                  "const": "rollback-started"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "timeoutMinutes", "repeatUntilAcknowledged"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "timeoutMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "repeatUntilAcknowledged": {
+          "const": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "requiredSeverities",
+        "events",
+        "throttleMinutes"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "type": {
+          "enum": ["slack", "email", "pager"]
+        },
+        "requiredSeverities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["critical", "high", "medium", "low"]
+          }
+        },
+        "events": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "quality-gate-failed",
+              "deployment-blocked",
+              "rollback-started"
+            ]
+          }
+        },
+        "throttleMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        }
+      }
+    }
+  }
+}

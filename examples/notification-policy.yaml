@@ -1,0 +1,24 @@
+version: 1
+channels:
+  - name: release-alerts
+    type: slack
+    requiredSeverities:
+      - critical
+      - high
+    events:
+      - quality-gate-failed
+      - deployment-blocked
+      - rollback-started
+    throttleMinutes: 10
+  - name: qa-email-digest
+    type: email
+    requiredSeverities:
+      - critical
+    events:
+      - quality-gate-failed
+      - rollback-started
+    throttleMinutes: 30
+escalation:
+  owner: qa-on-call
+  timeoutMinutes: 15
+  repeatUntilAcknowledged: true

@@ -17,6 +17,7 @@ Schema contracts to QA-specific examples.
 - deployment rollback triggers, thresholds and verification
 - environment variable matrix structure and required runtime URLs
 - flaky-test rerun and quarantine rules
+- notification channels for quality, deployment and rollback events
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
 - test report formats, paths, retention and publishing rules
@@ -81,6 +82,7 @@ npm test
 |-- examples/deployment-rollback-policy.yaml
 |-- examples/environment-matrix.yaml
 |-- examples/flaky-test-policy.yaml
+|-- examples/notification-policy.yaml
 |-- examples/pipeline-stages.yaml
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
@@ -94,6 +96,7 @@ npm test
 |   |-- flaky-test-policy.schema.json
 |   |-- kubernetes-regression-cronjob.schema.json
 |   |-- kubernetes-smoke-job.schema.json
+|   |-- notification-policy.schema.json
 |   |-- pipeline-stages.schema.json
 |   |-- quality-gate.schema.json
 |   |-- qa-test-plan.schema.json
@@ -127,6 +130,8 @@ Rollback starts automatically on health or error-rate failures, targets the
 previous stable release and requires health and smoke verification.
 Flaky tests can be rerun only for transient failures and must leave quarantine
 within 30 days with an assigned owner and issue.
+Notification policies must route critical quality failures and rollback starts
+to an owned escalation path with acknowledgement retries.
 Pipeline stage examples must include quality, smoke, regression and report
 stages so the lab keeps a complete QA release flow.
 The release quality gate requires at least a 95 percent pass rate, smoke and

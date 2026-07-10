@@ -67,6 +67,9 @@ test("validates every repository YAML file and registered contracts", async () =
   );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
+  assert(
+    result.files.some((file) => file.endsWith("notification-policy.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(result.files.some((file) => file.endsWith("test-report-policy.yaml")));
@@ -254,6 +257,31 @@ test("rejects expired flaky-test quarantine windows", async () => {
         (error) =>
           error.includes("flaky-test-policy contract") &&
           error.includes("must be <= 30"),
+      ),
+    );
+  });
+});
+
+test("rejects notification policies without rollback alerts", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "notification-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replaceAll("rollback-started", "deployment-blocked"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("notification-policy contract") &&
+          error.includes("must contain at least 1 valid item"),
       ),
     );
   });
