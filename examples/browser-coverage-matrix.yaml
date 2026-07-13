@@ -1,0 +1,27 @@
+version: 1
+browsers:
+  - name: chromium
+    channel: stable
+    requiredSuites:
+      - smoke
+      - regression
+  - name: firefox
+    channel: stable
+    requiredSuites:
+      - smoke
+      - regression
+  - name: webkit
+    channel: stable
+    requiredSuites:
+      - smoke
+viewports:
+  - name: desktop
+    width: 1440
+    height: 900
+  - name: mobile
+    width: 390
+    height: 844
+execution:
+  headless: true
+  retries: 1
+  trace: on-failure

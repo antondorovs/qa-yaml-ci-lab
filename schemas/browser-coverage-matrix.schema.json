@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/browser-coverage-matrix.schema.json",
+  "title": "Browser coverage matrix",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "browsers", "viewports", "execution"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "browsers": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/browser"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "chromium"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "firefox"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "webkit"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "viewports": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/viewport"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "desktop"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "mobile"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headless", "retries", "trace"],
+      "properties": {
+        "headless": {
+          "const": true
+        },
+        "retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "trace": {
+          "enum": ["off", "on-failure", "retain-on-failure"]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "browser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "channel", "requiredSuites"],
+      "properties": {
+        "name": {
+          "enum": ["chromium", "firefox", "webkit"]
+        },
+        "channel": {
+          "enum": ["stable", "beta", "technology-preview"]
+        },
+        "requiredSuites": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["smoke", "regression", "api", "e2e"]
+          },
+          "contains": {
+            "const": "smoke"
+          }
+        }
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "width", "height"],
+      "properties": {
+        "name": {
+          "enum": ["desktop", "mobile", "tablet"]
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 320,
+          "maximum": 3840
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 480,
+          "maximum": 2160
+        }
+      }
+    }
+  }
+}

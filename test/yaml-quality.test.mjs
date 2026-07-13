@@ -65,6 +65,9 @@ test("validates every repository YAML file and registered contracts", async () =
       file.endsWith("deployment-rollback-policy.yaml"),
     ),
   );
+  assert(
+    result.files.some((file) => file.endsWith("browser-coverage-matrix.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
@@ -184,6 +187,31 @@ test("rejects an environment matrix without a base URL", async () => {
       result.errors.some(
         (error) =>
           error.includes("environment-matrix contract") &&
+          error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects browser coverage without WebKit", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const matrixPath = path.join(
+      fixtureRoot,
+      "examples",
+      "browser-coverage-matrix.yaml",
+    );
+    const source = await readFile(matrixPath, "utf8");
+    await writeFile(
+      matrixPath,
+      source.replace("name: webkit", "name: firefox"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("browser-coverage-matrix contract") &&
           error.includes("must contain at least 1 valid item"),
       ),
     );

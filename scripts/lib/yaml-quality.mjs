@@ -31,6 +31,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/browser-coverage-matrix.yaml",
+    name: "browser-coverage-matrix",
+    schema: "schemas/browser-coverage-matrix.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/deployment-approval-policy.yaml",
     name: "deployment-approval-policy",
     schema: "schemas/deployment-approval-policy.schema.json",
