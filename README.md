@@ -15,6 +15,7 @@ Schema contracts to QA-specific examples.
 - accessibility audit coverage for critical release checks
 - browser coverage across Chromium, Firefox and WebKit
 - QA test plan structure and required fields for every named test plan
+- defect triage severity, intake and escalation rules
 - deployment approval rules for staging and production
 - deployment rollback triggers, thresholds and verification
 - environment variable matrix structure and required runtime URLs
@@ -83,6 +84,7 @@ npm test
 |-- examples/accessibility-audit-policy.yaml
 |-- examples/api-regression-test-plan.yaml
 |-- examples/browser-coverage-matrix.yaml
+|-- examples/defect-triage-policy.yaml
 |-- examples/deployment-approval-policy.yaml
 |-- examples/deployment-rollback-policy.yaml
 |-- examples/environment-matrix.yaml
@@ -98,6 +100,7 @@ npm test
 |-- schemas/
 |   |-- accessibility-audit-policy.schema.json
 |   |-- browser-coverage-matrix.schema.json
+|   |-- defect-triage-policy.schema.json
 |   |-- deployment-approval-policy.schema.json
 |   |-- deployment-rollback-policy.schema.json
 |   |-- environment-matrix.schema.json
@@ -135,6 +138,8 @@ Accessibility audit policies must keep WCAG 2.2 AA checks for keyboard
 navigation, color contrast and ARIA labels in the release gate.
 Browser coverage matrices must include Chromium, Firefox and WebKit with smoke
 coverage, plus desktop and mobile viewports for release confidence.
+Defect triage policies must keep critical response times tight and require
+reproduction details before escalation.
 Environment matrices must define a `BASE_URL` variable for each supported
 environment so CI jobs and Kubernetes examples can share the same target names.
 Production deployments require regression checks, two approvals and automatic

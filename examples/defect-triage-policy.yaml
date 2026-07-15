@@ -1,0 +1,27 @@
+version: 1
+severityLevels:
+  - name: critical
+    responseHours: 2
+    resolutionHours: 24
+    requiresOwner: true
+  - name: high
+    responseHours: 8
+    resolutionHours: 72
+    requiresOwner: true
+  - name: medium
+    responseHours: 24
+    resolutionHours: 168
+    requiresOwner: true
+intake:
+  requiredFields:
+    - title
+    - severity
+    - environment
+    - reproductionSteps
+    - expectedResult
+    - actualResult
+  duplicateCheck: true
+escalation:
+  owner: qa-lead
+  staleAfterHours: 48
+  notify: qa-on-call

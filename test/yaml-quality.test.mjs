@@ -73,6 +73,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("browser-coverage-matrix.yaml")),
   );
+  assert(
+    result.files.some((file) => file.endsWith("defect-triage-policy.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
@@ -248,6 +251,31 @@ test("rejects browser coverage without WebKit", async () => {
         (error) =>
           error.includes("browser-coverage-matrix contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects critical defect triage with slow response", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "defect-triage-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("responseHours: 2", "responseHours: 8"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("defect-triage-policy contract") &&
+          error.includes("must be <= 4"),
       ),
     );
   });

@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/defect-triage-policy.schema.json",
+  "title": "Defect triage policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "severityLevels", "intake", "escalation"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "severityLevels": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/severity"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "critical"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "high"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "medium"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "intake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredFields", "duplicateCheck"],
+      "properties": {
+        "requiredFields": {
+          "type": "array",
+          "minItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "title",
+              "severity",
+              "environment",
+              "reproductionSteps",
+              "expectedResult",
+              "actualResult",
+              "attachment"
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "severity"
+              }
+            },
+            {
+              "contains": {
+                "const": "reproductionSteps"
+              }
+            },
+            {
+              "contains": {
+                "const": "actualResult"
+              }
+            }
+          ]
+        },
+        "duplicateCheck": {
+          "const": true
+        }
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "staleAfterHours", "notify"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "staleAfterHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 72
+        },
+        "notify": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "severity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "responseHours", "resolutionHours", "requiresOwner"],
+      "properties": {
+        "name": {
+          "enum": ["critical", "high", "medium"]
+        },
+        "responseHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolutionHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requiresOwner": {
+          "const": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "critical"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "responseHours": {
+                "type": "integer",
+                "maximum": 4
+              },
+              "resolutionHours": {
+                "type": "integer",
+                "maximum": 24
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "high"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "responseHours": {
+                "type": "integer",
+                "maximum": 8
+              },
+              "resolutionHours": {
+                "type": "integer",
+                "maximum": 72
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
