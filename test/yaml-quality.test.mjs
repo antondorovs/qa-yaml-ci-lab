@@ -78,6 +78,11 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("notification-policy.yaml")),
   );
+  assert(
+    result.files.some((file) =>
+      file.endsWith("performance-budget-policy.yaml"),
+    ),
+  );
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(result.files.some((file) => file.endsWith("test-report-policy.yaml")));
@@ -340,6 +345,28 @@ test("rejects notification policies without rollback alerts", async () => {
         (error) =>
           error.includes("notification-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects performance budgets above release targets", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "performance-budget-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(policyPath, source.replace("target: 2500", "target: 3000"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("performance-budget-policy contract") &&
+          error.includes("must be <= 2500"),
       ),
     );
   });

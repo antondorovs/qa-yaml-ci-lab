@@ -1,0 +1,21 @@
+version: 1
+budgets:
+  - name: largest-contentful-paint
+    target: 2500
+    unit: ms
+    scope: page-load
+  - name: cumulative-layout-shift
+    target: 0.1
+    unit: score
+    scope: page-load
+  - name: total-blocking-time
+    target: 300
+    unit: ms
+    scope: interaction
+enforcement:
+  blockOnRegression: true
+  comparison: previous-release
+reporting:
+  format: json
+  path: reports/performance-budget.json
+  retentionDays: 14

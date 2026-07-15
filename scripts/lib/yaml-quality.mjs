@@ -73,6 +73,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/performance-budget-policy.yaml",
+    name: "performance-budget-policy",
+    schema: "schemas/performance-budget-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/quality-gate.yaml",
     name: "quality-gate",
     schema: "schemas/quality-gate.schema.json",

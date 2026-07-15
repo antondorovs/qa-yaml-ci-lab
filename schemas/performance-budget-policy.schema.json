@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/performance-budget-policy.schema.json",
+  "title": "Performance budget policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "budgets", "enforcement", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "budgets": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/budget"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "largest-contentful-paint"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "cumulative-layout-shift"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "total-blocking-time"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blockOnRegression", "comparison"],
+      "properties": {
+        "blockOnRegression": {
+          "const": true
+        },
+        "comparison": {
+          "const": "previous-release"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "enum": ["json", "html"]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "target", "unit", "scope"],
+      "properties": {
+        "name": {
+          "enum": [
+            "largest-contentful-paint",
+            "cumulative-layout-shift",
+            "total-blocking-time"
+          ]
+        },
+        "target": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "enum": ["ms", "score"]
+        },
+        "scope": {
+          "enum": ["page-load", "interaction"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "largest-contentful-paint"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number",
+                "maximum": 2500
+              },
+              "unit": {
+                "const": "ms"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "cumulative-layout-shift"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number",
+                "maximum": 0.1
+              },
+              "unit": {
+                "const": "score"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "total-blocking-time"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number",
+                "maximum": 300
+              },
+              "unit": {
+                "const": "ms"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
