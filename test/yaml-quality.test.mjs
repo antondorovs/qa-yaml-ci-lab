@@ -51,6 +51,11 @@ test("validates every repository YAML file and registered contracts", async () =
   const result = await validateRepository(projectRoot);
 
   assert.equal(result.errors.length, 0);
+  assert(
+    result.files.some((file) =>
+      file.endsWith("accessibility-audit-policy.yaml"),
+    ),
+  );
   assert(result.files.some((file) => file.endsWith("qa-test-plan.yaml")));
   assert(
     result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
@@ -166,6 +171,31 @@ test("applies the QA contract to every named test plan", async () => {
         (error) =>
           error.includes("api-regression-test-plan.yaml") &&
           error.includes("required property 'priority'"),
+      ),
+    );
+  });
+});
+
+test("rejects accessibility audits without keyboard coverage", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "accessibility-audit-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("name: keyboard-navigation", "name: color-contrast"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("accessibility-audit-policy contract") &&
+          error.includes("must contain at least 1 valid item"),
       ),
     );
   });

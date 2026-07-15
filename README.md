@@ -12,6 +12,7 @@ Schema contracts to QA-specific examples.
 - YAML syntax across the repository
 - duplicate mapping keys
 - formatting with Prettier
+- accessibility audit coverage for critical release checks
 - browser coverage across Chromium, Firefox and WebKit
 - QA test plan structure and required fields for every named test plan
 - deployment approval rules for staging and production
@@ -78,6 +79,7 @@ npm test
 |-- Dockerfile
 |-- .github/workflows/quality-gate.yml
 |-- .dockerignore
+|-- examples/accessibility-audit-policy.yaml
 |-- examples/api-regression-test-plan.yaml
 |-- examples/browser-coverage-matrix.yaml
 |-- examples/deployment-approval-policy.yaml
@@ -92,6 +94,7 @@ npm test
 |-- k8s/regression-cronjob.yaml
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
+|   |-- accessibility-audit-policy.schema.json
 |   |-- browser-coverage-matrix.schema.json
 |   |-- deployment-approval-policy.schema.json
 |   |-- deployment-rollback-policy.schema.json
@@ -125,6 +128,8 @@ Schema failures include the contract and JSON path:
 examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required property 'expected'
 ```
 
+Accessibility audit policies must keep WCAG 2.2 AA checks for keyboard
+navigation, color contrast and ARIA labels in the release gate.
 Browser coverage matrices must include Chromium, Firefox and WebKit with smoke
 coverage, plus desktop and mobile viewports for release confidence.
 Environment matrices must define a `BASE_URL` variable for each supported

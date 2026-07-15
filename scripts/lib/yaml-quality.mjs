@@ -25,6 +25,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/accessibility-audit-policy.yaml",
+    name: "accessibility-audit-policy",
+    schema: "schemas/accessibility-audit-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/environment-matrix.yaml",
     name: "environment-matrix",
     schema: "schemas/environment-matrix.schema.json",

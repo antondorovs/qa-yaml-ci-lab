@@ -1,0 +1,23 @@
+version: 1
+standard: wcag-2.2-aa
+checks:
+  - name: keyboard-navigation
+    severity: critical
+    requiredSuites:
+      - smoke
+      - regression
+  - name: color-contrast
+    severity: serious
+    requiredSuites:
+      - regression
+  - name: aria-labels
+    severity: serious
+    requiredSuites:
+      - smoke
+thresholds:
+  criticalViolations: 0
+  seriousViolations: 2
+reporting:
+  format: html
+  path: reports/accessibility
+  retentionDays: 14
