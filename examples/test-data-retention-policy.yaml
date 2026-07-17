@@ -1,0 +1,20 @@
+version: 1
+datasets:
+  - name: seed-fixtures
+    type: synthetic
+    classification: public
+    retentionDays: 30
+    cleanup: automatic
+  - name: masked-production-sample
+    type: anonymized-production
+    classification: restricted
+    retentionDays: 7
+    cleanup: automatic
+controls:
+  maskingRequired: true
+  exportApproval: qa-lead
+  storage: encrypted-artifacts
+reporting:
+  format: json
+  path: reports/test-data-retention.json
+  retentionDays: 14

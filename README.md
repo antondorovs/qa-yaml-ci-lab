@@ -25,6 +25,7 @@ Schema contracts to QA-specific examples.
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
 - security scan coverage for static analysis, dependencies and secrets
+- test data retention and masking rules
 - test report formats, paths, retention and publishing rules
 - a compact Kubernetes smoke-test Job contract
 - a scheduled Kubernetes regression CronJob with overlap protection
@@ -96,6 +97,7 @@ npm test
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
 |-- examples/security-scan-policy.yaml
+|-- examples/test-data-retention-policy.yaml
 |-- examples/test-report-policy.yaml
 |-- k8s/regression-cronjob.yaml
 |-- k8s/smoke-test-job.yaml
@@ -115,6 +117,7 @@ npm test
 |   |-- quality-gate.schema.json
 |   |-- qa-test-plan.schema.json
 |   |-- security-scan-policy.schema.json
+|   |-- test-data-retention-policy.schema.json
 |   `-- test-report-policy.schema.json
 |-- scripts/
 |   |-- lib/yaml-quality.mjs
@@ -161,6 +164,8 @@ The release quality gate requires at least a 95 percent pass rate, smoke and
 regression suites, and critical-severity blocking.
 Security scan policies must require static analysis, dependency auditing and
 secret scanning before release artifacts are accepted.
+Test data retention policies must keep masked production samples short-lived
+and require encrypted artifact storage.
 The test report policy requires JUnit and HTML artifacts, repository-relative
 paths and retention between 1 and 30 days.
 The regression CronJob uses `concurrencyPolicy: Forbid` so a delayed nightly

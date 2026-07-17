@@ -97,6 +97,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/test-data-retention-policy.yaml",
+    name: "test-data-retention-policy",
+    schema: "schemas/test-data-retention-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/test-report-policy.yaml",
     name: "test-report-policy",
     schema: "schemas/test-report-policy.schema.json",

@@ -91,6 +91,11 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("security-scan-policy.yaml")),
   );
+  assert(
+    result.files.some((file) =>
+      file.endsWith("test-data-retention-policy.yaml"),
+    ),
+  );
   assert(result.files.some((file) => file.endsWith("test-report-policy.yaml")));
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
   assert(result.files.some((file) => file.endsWith("regression-cronjob.yaml")));
@@ -463,6 +468,31 @@ test("rejects security scans without secret scanning", async () => {
         (error) =>
           error.includes("security-scan-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects test data retention without masking", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "test-data-retention-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("maskingRequired: true", "maskingRequired: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("test-data-retention-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

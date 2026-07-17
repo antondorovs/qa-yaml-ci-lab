@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/test-data-retention-policy.schema.json",
+  "title": "Test data retention policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "datasets", "controls", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "datasets": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/dataset"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "synthetic"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "anonymized-production"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maskingRequired", "exportApproval", "storage"],
+      "properties": {
+        "maskingRequired": {
+          "const": true
+        },
+        "exportApproval": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "storage": {
+          "const": "encrypted-artifacts"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "enum": ["json", "html"]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "classification",
+        "retentionDays",
+        "cleanup"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "type": {
+          "enum": ["synthetic", "anonymized-production"]
+        },
+        "classification": {
+          "enum": ["public", "restricted"]
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "cleanup": {
+          "const": "automatic"
+        }
+      }
+    }
+  }
+}
