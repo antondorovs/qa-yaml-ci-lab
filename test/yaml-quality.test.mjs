@@ -88,6 +88,9 @@ test("validates every repository YAML file and registered contracts", async () =
   );
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
+  assert(
+    result.files.some((file) => file.endsWith("security-scan-policy.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("test-report-policy.yaml")));
   assert(result.files.some((file) => file.endsWith("smoke-test-job.yaml")));
   assert(result.files.some((file) => file.endsWith("regression-cronjob.yaml")));
@@ -438,6 +441,28 @@ test("rejects a release gate with a low pass rate", async () => {
         (error) =>
           error.includes("quality-gate contract") &&
           error.includes("must be >= 95"),
+      ),
+    );
+  });
+});
+
+test("rejects security scans without secret scanning", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "security-scan-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(policyPath, source.replace("type: secret", "type: sast"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("security-scan-policy contract") &&
+          error.includes("must contain at least 1 valid item"),
       ),
     );
   });

@@ -91,6 +91,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/security-scan-policy.yaml",
+    name: "security-scan-policy",
+    schema: "schemas/security-scan-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/test-report-policy.yaml",
     name: "test-report-policy",
     schema: "schemas/test-report-policy.schema.json",

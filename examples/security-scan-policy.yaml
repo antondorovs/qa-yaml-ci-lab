@@ -1,0 +1,26 @@
+version: 1
+scans:
+  - name: static-analysis
+    type: sast
+    required: true
+    blockOnSeverities:
+      - critical
+      - high
+  - name: dependency-audit
+    type: dependency
+    required: true
+    blockOnSeverities:
+      - critical
+      - high
+  - name: secret-scan
+    type: secret
+    required: true
+    blockOnSeverities:
+      - critical
+thresholds:
+  maximumCriticalFindings: 0
+  maximumHighFindings: 2
+reporting:
+  format: json
+  path: reports/security-scan.json
+  retentionDays: 14
