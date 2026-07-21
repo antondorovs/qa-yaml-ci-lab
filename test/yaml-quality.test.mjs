@@ -74,6 +74,9 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("browser-coverage-matrix.yaml")),
   );
   assert(
+    result.files.some((file) => file.endsWith("contract-test-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("defect-triage-policy.yaml")),
   );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
@@ -268,6 +271,31 @@ test("rejects browser coverage without WebKit", async () => {
       result.errors.some(
         (error) =>
           error.includes("browser-coverage-matrix contract") &&
+          error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects contract tests without event schemas", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "contract-test-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("type: event-schema", "type: consumer-provider"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("contract-test-policy contract") &&
           error.includes("must contain at least 1 valid item"),
       ),
     );

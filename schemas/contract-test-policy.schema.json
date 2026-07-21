@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/contract-test-policy.schema.json",
+  "title": "Contract test policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "contracts", "validation", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "contracts": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/contract"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "consumer-provider"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "event-schema"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "brokerRequired",
+        "publishVerification",
+        "blockOnBreakingChange"
+      ],
+      "properties": {
+        "brokerRequired": {
+          "const": true
+        },
+        "publishVerification": {
+          "const": true
+        },
+        "blockOnBreakingChange": {
+          "const": true
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "enum": ["json", "html"]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "provider", "requiredSuites"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "type": {
+          "enum": ["consumer-provider", "event-schema"]
+        },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "requiredSuites": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["smoke", "regression", "api", "e2e"]
+          },
+          "contains": {
+            "const": "regression"
+          }
+        }
+      }
+    }
+  }
+}

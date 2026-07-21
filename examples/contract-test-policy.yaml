@@ -1,0 +1,21 @@
+version: 1
+contracts:
+  - name: public-api
+    type: consumer-provider
+    provider: api-service
+    requiredSuites:
+      - smoke
+      - regression
+  - name: webhook-events
+    type: event-schema
+    provider: event-service
+    requiredSuites:
+      - regression
+validation:
+  brokerRequired: true
+  publishVerification: true
+  blockOnBreakingChange: true
+reporting:
+  format: json
+  path: reports/contract-tests.json
+  retentionDays: 14
