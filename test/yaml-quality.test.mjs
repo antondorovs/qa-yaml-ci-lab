@@ -93,6 +93,11 @@ test("validates every repository YAML file and registered contracts", async () =
   );
   assert(
     result.files.some((file) =>
+      file.endsWith("service-level-objective-policy.yaml"),
+    ),
+  );
+  assert(
+    result.files.some((file) =>
       file.endsWith("test-data-retention-policy.yaml"),
     ),
   );
@@ -468,6 +473,28 @@ test("rejects security scans without secret scanning", async () => {
         (error) =>
           error.includes("security-scan-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects service levels with slow p95 latency", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "service-level-objective-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(policyPath, source.replace("target: 500", "target: 750"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("service-level-objective-policy contract") &&
+          error.includes("must be <= 500"),
       ),
     );
   });

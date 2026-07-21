@@ -25,6 +25,7 @@ Schema contracts to QA-specific examples.
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
 - security scan coverage for static analysis, dependencies and secrets
+- service level objectives for release readiness
 - test data retention and masking rules
 - test report formats, paths, retention and publishing rules
 - a compact Kubernetes smoke-test Job contract
@@ -97,6 +98,7 @@ npm test
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
 |-- examples/security-scan-policy.yaml
+|-- examples/service-level-objective-policy.yaml
 |-- examples/test-data-retention-policy.yaml
 |-- examples/test-report-policy.yaml
 |-- k8s/regression-cronjob.yaml
@@ -117,6 +119,7 @@ npm test
 |   |-- quality-gate.schema.json
 |   |-- qa-test-plan.schema.json
 |   |-- security-scan-policy.schema.json
+|   |-- service-level-objective-policy.schema.json
 |   |-- test-data-retention-policy.schema.json
 |   `-- test-report-policy.schema.json
 |-- scripts/
@@ -164,6 +167,8 @@ The release quality gate requires at least a 95 percent pass rate, smoke and
 regression suites, and critical-severity blocking.
 Security scan policies must require static analysis, dependency auditing and
 secret scanning before release artifacts are accepted.
+Service level objective policies must keep availability, latency and error-rate
+targets inside the release readiness gate.
 Test data retention policies must keep masked production samples short-lived
 and require encrypted artifact storage.
 The test report policy requires JUnit and HTML artifacts, repository-relative

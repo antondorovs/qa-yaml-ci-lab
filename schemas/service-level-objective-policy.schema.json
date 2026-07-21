@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/service-level-objective-policy.schema.json",
+  "title": "Service level objective policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "objectives", "enforcement", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "objectives": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/objective"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "availability"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "p95-latency"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "error-rate"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blockReleaseOnBreach", "comparison"],
+      "properties": {
+        "blockReleaseOnBreach": {
+          "const": true
+        },
+        "comparison": {
+          "const": "rolling-window"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "enum": ["json", "html"]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "target", "unit", "window"],
+      "properties": {
+        "name": {
+          "enum": ["availability", "p95-latency", "error-rate"]
+        },
+        "target": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "enum": ["percent", "ms"]
+        },
+        "window": {
+          "enum": ["7d", "30d"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "availability"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number",
+                "minimum": 99.9
+              },
+              "unit": {
+                "const": "percent"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "p95-latency"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number",
+                "maximum": 500
+              },
+              "unit": {
+                "const": "ms"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "error-rate"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "number",
+                "maximum": 1
+              },
+              "unit": {
+                "const": "percent"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

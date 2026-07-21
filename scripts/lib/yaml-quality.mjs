@@ -97,6 +97,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/service-level-objective-policy.yaml",
+    name: "service-level-objective-policy",
+    schema: "schemas/service-level-objective-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/test-data-retention-policy.yaml",
     name: "test-data-retention-policy",
     schema: "schemas/test-data-retention-policy.schema.json",

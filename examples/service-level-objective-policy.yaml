@@ -1,0 +1,21 @@
+version: 1
+objectives:
+  - name: availability
+    target: 99.9
+    unit: percent
+    window: 30d
+  - name: p95-latency
+    target: 500
+    unit: ms
+    window: 7d
+  - name: error-rate
+    target: 1
+    unit: percent
+    window: 7d
+enforcement:
+  blockReleaseOnBreach: true
+  comparison: rolling-window
+reporting:
+  format: json
+  path: reports/service-level-objectives.json
+  retentionDays: 14
