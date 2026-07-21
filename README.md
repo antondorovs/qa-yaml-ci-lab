@@ -21,6 +21,7 @@ Schema contracts to QA-specific examples.
 - environment variable matrix structure and required runtime URLs
 - flaky-test rerun and quarantine rules
 - notification channels for quality, deployment and rollback events
+- observability alert coverage for release health signals
 - performance budget thresholds for release regressions
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
@@ -93,6 +94,7 @@ npm test
 |-- examples/environment-matrix.yaml
 |-- examples/flaky-test-policy.yaml
 |-- examples/notification-policy.yaml
+|-- examples/observability-alert-policy.yaml
 |-- examples/performance-budget-policy.yaml
 |-- examples/pipeline-stages.yaml
 |-- examples/quality-gate.yaml
@@ -114,6 +116,7 @@ npm test
 |   |-- kubernetes-regression-cronjob.schema.json
 |   |-- kubernetes-smoke-job.schema.json
 |   |-- notification-policy.schema.json
+|   |-- observability-alert-policy.schema.json
 |   |-- performance-budget-policy.schema.json
 |   |-- pipeline-stages.schema.json
 |   |-- quality-gate.schema.json
@@ -159,6 +162,8 @@ Flaky tests can be rerun only for transient failures and must leave quarantine
 within 30 days with an assigned owner and issue.
 Notification policies must route critical quality failures and rollback starts
 to an owned escalation path with acknowledgement retries.
+Observability alert policies must keep metrics, logs and traces wired to owned
+release-health escalation routes.
 Performance budgets must keep page-load and interaction metrics within release
 targets and compare regressions against the previous release.
 Pipeline stage examples must include quality, smoke, regression and report

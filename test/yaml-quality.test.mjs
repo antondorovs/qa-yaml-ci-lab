@@ -83,6 +83,11 @@ test("validates every repository YAML file and registered contracts", async () =
   );
   assert(
     result.files.some((file) =>
+      file.endsWith("observability-alert-policy.yaml"),
+    ),
+  );
+  assert(
+    result.files.some((file) =>
       file.endsWith("performance-budget-policy.yaml"),
     ),
   );
@@ -385,6 +390,28 @@ test("rejects notification policies without rollback alerts", async () => {
       result.errors.some(
         (error) =>
           error.includes("notification-policy contract") &&
+          error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects observability policies without traces", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "observability-alert-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(policyPath, source.replace("type: traces", "type: logs"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("observability-alert-policy contract") &&
           error.includes("must contain at least 1 valid item"),
       ),
     );

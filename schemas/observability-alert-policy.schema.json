@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/observability-alert-policy.schema.json",
+  "title": "Observability alert policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "signals", "alerts", "routing"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "signals": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/signal"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "metrics"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "logs"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "traces"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "alerts": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/alert"
+      },
+      "contains": {
+        "type": "object",
+        "required": ["severity"],
+        "properties": {
+          "severity": {
+            "const": "critical"
+          }
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "escalationMinutes", "acknowledgeRequired"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "escalationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "acknowledgeRequired": {
+          "const": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required", "retentionDays"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "type": {
+          "enum": ["metrics", "logs", "traces"]
+        },
+        "required": {
+          "const": true
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "trigger", "severity", "notify"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "trigger": {
+          "enum": [
+            "service-level-objective-breach",
+            "smoke-test-failed",
+            "rollback-started"
+          ]
+        },
+        "severity": {
+          "enum": ["critical", "high", "medium"]
+        },
+        "notify": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    }
+  }
+}

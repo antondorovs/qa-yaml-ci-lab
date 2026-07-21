@@ -1,0 +1,27 @@
+version: 1
+signals:
+  - name: service-metrics
+    type: metrics
+    required: true
+    retentionDays: 14
+  - name: application-logs
+    type: logs
+    required: true
+    retentionDays: 14
+  - name: request-traces
+    type: traces
+    required: true
+    retentionDays: 7
+alerts:
+  - name: slo-breach
+    trigger: service-level-objective-breach
+    severity: critical
+    notify: qa-on-call
+  - name: smoke-failure
+    trigger: smoke-test-failed
+    severity: high
+    notify: qa-on-call
+routing:
+  owner: qa-on-call
+  escalationMinutes: 15
+  acknowledgeRequired: true

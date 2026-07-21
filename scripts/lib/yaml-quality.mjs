@@ -73,6 +73,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/observability-alert-policy.yaml",
+    name: "observability-alert-policy",
+    schema: "schemas/observability-alert-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/pipeline-stages.yaml",
     name: "pipeline-stages",
     schema: "schemas/pipeline-stages.schema.json",
