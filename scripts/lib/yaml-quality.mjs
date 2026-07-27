@@ -73,6 +73,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/incident-review-policy.yaml",
+    name: "incident-review-policy",
+    schema: "schemas/incident-review-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/notification-policy.yaml",
     name: "notification-policy",
     schema: "schemas/notification-policy.schema.json",

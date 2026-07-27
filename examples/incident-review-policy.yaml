@@ -1,0 +1,25 @@
+version: 1
+review:
+  triggerSeverities:
+    - critical
+    - high
+  deadlineHours: 48
+  facilitator: qa-lead
+sections:
+  - name: timeline
+    required: true
+    owner: incident-commander
+  - name: root-cause
+    required: true
+    owner: service-owner
+  - name: action-items
+    required: true
+    owner: qa-lead
+followUp:
+  requireOwner: true
+  maximumOpenDays: 14
+  publishSummary: true
+reporting:
+  format: markdown
+  path: reports/incident-review.md
+  retentionDays: 30

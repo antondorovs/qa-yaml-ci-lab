@@ -82,6 +82,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
+    result.files.some((file) => file.endsWith("incident-review-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("notification-policy.yaml")),
   );
   assert(
@@ -399,6 +402,31 @@ test("rejects expired flaky-test quarantine windows", async () => {
         (error) =>
           error.includes("flaky-test-policy contract") &&
           error.includes("must be <= 30"),
+      ),
+    );
+  });
+});
+
+test("rejects incident reviews without root-cause sections", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "incident-review-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("name: root-cause", "name: timeline"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("incident-review-policy contract") &&
+          error.includes("must contain at least 1 valid item"),
       ),
     );
   });

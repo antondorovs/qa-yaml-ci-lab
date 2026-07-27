@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/incident-review-policy.schema.json",
+  "title": "Incident review policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "review", "sections", "followUp", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["triggerSeverities", "deadlineHours", "facilitator"],
+      "properties": {
+        "triggerSeverities": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "critical"
+              }
+            },
+            {
+              "contains": {
+                "const": "high"
+              }
+            }
+          ]
+        },
+        "deadlineHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 72
+        },
+        "facilitator": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/section"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "timeline"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "root-cause"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "action-items"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "followUp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requireOwner", "maximumOpenDays", "publishSummary"],
+      "properties": {
+        "requireOwner": {
+          "const": true
+        },
+        "maximumOpenDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "publishSummary": {
+          "const": true
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "markdown"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner"],
+      "properties": {
+        "name": {
+          "enum": ["timeline", "root-cause", "action-items"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    }
+  }
+}

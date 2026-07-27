@@ -21,6 +21,7 @@ Schema contracts to QA-specific examples.
 - deployment rollback triggers, thresholds and verification
 - environment variable matrix structure and required runtime URLs
 - flaky-test rerun and quarantine rules
+- incident review deadlines, sections and follow-up ownership
 - notification channels for quality, deployment and rollback events
 - observability alert coverage for release health signals
 - performance budget thresholds for release regressions
@@ -96,6 +97,7 @@ npm test
 |-- examples/deployment-rollback-policy.yaml
 |-- examples/environment-matrix.yaml
 |-- examples/flaky-test-policy.yaml
+|-- examples/incident-review-policy.yaml
 |-- examples/notification-policy.yaml
 |-- examples/observability-alert-policy.yaml
 |-- examples/performance-budget-policy.yaml
@@ -118,6 +120,7 @@ npm test
 |   |-- deployment-rollback-policy.schema.json
 |   |-- environment-matrix.schema.json
 |   |-- flaky-test-policy.schema.json
+|   |-- incident-review-policy.schema.json
 |   |-- kubernetes-regression-cronjob.schema.json
 |   |-- kubernetes-smoke-job.schema.json
 |   |-- notification-policy.schema.json
@@ -168,6 +171,8 @@ Rollback starts automatically on health or error-rate failures, targets the
 previous stable release and requires health and smoke verification.
 Flaky tests can be rerun only for transient failures and must leave quarantine
 within 30 days with an assigned owner and issue.
+Incident review policies must include timeline, root-cause and action-item
+sections with owned follow-up before the review is closed.
 Notification policies must route critical quality failures and rollback starts
 to an owned escalation path with acknowledgement retries.
 Observability alert policies must keep metrics, logs and traces wired to owned
