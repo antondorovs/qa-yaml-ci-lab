@@ -1,0 +1,26 @@
+version: 1
+dimensions:
+  - name: security
+    riskScore: 2
+    owner: security-reviewer
+    requiredEvidence: scan-report
+  - name: performance
+    riskScore: 2
+    owner: qa-automation
+    requiredEvidence: performance-report
+  - name: accessibility
+    riskScore: 1
+    owner: qa-automation
+    requiredEvidence: accessibility-report
+  - name: test-data
+    riskScore: 1
+    owner: qa-lead
+    requiredEvidence: retention-report
+decision:
+  maximumRiskScore: 3
+  requireAllEvidence: true
+  blockOnUnknownOwner: true
+reporting:
+  format: json
+  path: reports/release-risk-assessment.json
+  retentionDays: 14

@@ -103,6 +103,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/release-risk-assessment-policy.yaml",
+    name: "release-risk-assessment-policy",
+    schema: "schemas/release-risk-assessment-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/security-scan-policy.yaml",
     name: "security-scan-policy",
     schema: "schemas/security-scan-policy.schema.json",

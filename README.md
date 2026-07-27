@@ -26,6 +26,7 @@ Schema contracts to QA-specific examples.
 - performance budget thresholds for release regressions
 - pipeline stage structure for quality, smoke, regression and reporting
 - release quality thresholds for pass rate, failures and flaky tests
+- release risk assessment across security, performance and data controls
 - security scan coverage for static analysis, dependencies and secrets
 - service level objectives for release readiness
 - test data retention and masking rules
@@ -101,6 +102,7 @@ npm test
 |-- examples/pipeline-stages.yaml
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
+|-- examples/release-risk-assessment-policy.yaml
 |-- examples/security-scan-policy.yaml
 |-- examples/service-level-objective-policy.yaml
 |-- examples/test-data-retention-policy.yaml
@@ -124,6 +126,7 @@ npm test
 |   |-- pipeline-stages.schema.json
 |   |-- quality-gate.schema.json
 |   |-- qa-test-plan.schema.json
+|   |-- release-risk-assessment-policy.schema.json
 |   |-- security-scan-policy.schema.json
 |   |-- service-level-objective-policy.schema.json
 |   |-- test-data-retention-policy.schema.json
@@ -175,6 +178,8 @@ Pipeline stage examples must include quality, smoke, regression and report
 stages so the lab keeps a complete QA release flow.
 The release quality gate requires at least a 95 percent pass rate, smoke and
 regression suites, and critical-severity blocking.
+Release risk assessments must keep each release dimension inside the accepted
+risk score and require evidence before approval.
 Security scan policies must require static analysis, dependency auditing and
 secret scanning before release artifacts are accepted.
 Service level objective policies must keep availability, latency and error-rate

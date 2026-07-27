@@ -97,6 +97,11 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(
+    result.files.some((file) =>
+      file.endsWith("release-risk-assessment-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("security-scan-policy.yaml")),
   );
   assert(
@@ -506,6 +511,28 @@ test("rejects a release gate with a low pass rate", async () => {
         (error) =>
           error.includes("quality-gate contract") &&
           error.includes("must be >= 95"),
+      ),
+    );
+  });
+});
+
+test("rejects release risk assessments above the risk limit", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "release-risk-assessment-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(policyPath, source.replace("riskScore: 2", "riskScore: 4"));
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("release-risk-assessment-policy contract") &&
+          error.includes("must be <= 3"),
       ),
     );
   });

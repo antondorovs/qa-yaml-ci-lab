@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/release-risk-assessment-policy.schema.json",
+  "title": "Release risk assessment policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "dimensions", "decision", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "$ref": "#/$defs/dimension"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "security"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "performance"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "accessibility"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "test-data"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximumRiskScore",
+        "requireAllEvidence",
+        "blockOnUnknownOwner"
+      ],
+      "properties": {
+        "maximumRiskScore": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "requireAllEvidence": {
+          "const": true
+        },
+        "blockOnUnknownOwner": {
+          "const": true
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "enum": ["json", "html"]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "riskScore", "owner", "requiredEvidence"],
+      "properties": {
+        "name": {
+          "enum": ["security", "performance", "accessibility", "test-data"]
+        },
+        "riskScore": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "requiredEvidence": {
+          "enum": [
+            "scan-report",
+            "performance-report",
+            "accessibility-report",
+            "retention-report"
+          ]
+        }
+      }
+    }
+  }
+}
