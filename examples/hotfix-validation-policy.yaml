@@ -1,0 +1,26 @@
+version: 1
+scope:
+  releaseType: hotfix
+  maximumLeadHours: 24
+  approvalCount: 1
+checks:
+  - name: smoke
+    required: true
+    owner: qa-lead
+    evidence: smoke-report
+  - name: targeted-regression
+    required: true
+    owner: service-owner
+    evidence: regression-summary
+  - name: rollback-check
+    required: true
+    owner: release-manager
+    evidence: rollback-plan
+rollback:
+  requirePlan: true
+  owner: release-manager
+  verificationMinutes: 30
+reporting:
+  format: json
+  path: reports/hotfix-validation.json
+  retentionDays: 14

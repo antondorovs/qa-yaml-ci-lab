@@ -21,6 +21,7 @@ Schema contracts to QA-specific examples.
 - deployment rollback triggers, thresholds and verification
 - environment variable matrix structure and required runtime URLs
 - flaky-test rerun and quarantine rules
+- hotfix validation for smoke, targeted regression and rollback readiness
 - incident review deadlines, sections and follow-up ownership
 - notification channels for quality, deployment and rollback events
 - observability alert coverage for release health signals
@@ -97,6 +98,7 @@ npm test
 |-- examples/deployment-rollback-policy.yaml
 |-- examples/environment-matrix.yaml
 |-- examples/flaky-test-policy.yaml
+|-- examples/hotfix-validation-policy.yaml
 |-- examples/incident-review-policy.yaml
 |-- examples/notification-policy.yaml
 |-- examples/observability-alert-policy.yaml
@@ -120,6 +122,7 @@ npm test
 |   |-- deployment-rollback-policy.schema.json
 |   |-- environment-matrix.schema.json
 |   |-- flaky-test-policy.schema.json
+|   |-- hotfix-validation-policy.schema.json
 |   |-- incident-review-policy.schema.json
 |   |-- kubernetes-regression-cronjob.schema.json
 |   |-- kubernetes-smoke-job.schema.json
@@ -171,6 +174,8 @@ Rollback starts automatically on health or error-rate failures, targets the
 previous stable release and requires health and smoke verification.
 Flaky tests can be rerun only for transient failures and must leave quarantine
 within 30 days with an assigned owner and issue.
+Hotfix validation policies must keep smoke, targeted regression and rollback
+checks required before a shortened release path is accepted.
 Incident review policies must include timeline, root-cause and action-item
 sections with owned follow-up before the review is closed.
 Notification policies must route critical quality failures and rollback starts

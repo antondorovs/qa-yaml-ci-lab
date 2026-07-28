@@ -82,6 +82,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
+    result.files.some((file) => file.endsWith("hotfix-validation-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("incident-review-policy.yaml")),
   );
   assert(
@@ -402,6 +405,31 @@ test("rejects expired flaky-test quarantine windows", async () => {
         (error) =>
           error.includes("flaky-test-policy contract") &&
           error.includes("must be <= 30"),
+      ),
+    );
+  });
+});
+
+test("rejects hotfix validation without rollback checks", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "hotfix-validation-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("name: rollback-check", "name: smoke"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("hotfix-validation-policy contract") &&
+          error.includes("must contain at least 1 valid item"),
       ),
     );
   });

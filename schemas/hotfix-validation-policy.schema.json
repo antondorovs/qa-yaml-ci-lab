@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/hotfix-validation-policy.schema.json",
+  "title": "Hotfix validation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "scope", "checks", "rollback", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["releaseType", "maximumLeadHours", "approvalCount"],
+      "properties": {
+        "releaseType": {
+          "const": "hotfix"
+        },
+        "maximumLeadHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "approvalCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "smoke"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "targeted-regression"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "rollback-check"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirePlan", "owner", "verificationMinutes"],
+      "properties": {
+        "requirePlan": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "verificationMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["smoke", "targeted-regression", "rollback-check"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": ["smoke-report", "regression-summary", "rollback-plan"]
+        }
+      }
+    }
+  }
+}
