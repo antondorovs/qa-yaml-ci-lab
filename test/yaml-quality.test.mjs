@@ -74,6 +74,9 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("browser-coverage-matrix.yaml")),
   );
   assert(
+    result.files.some((file) => file.endsWith("canary-release-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("contract-test-policy.yaml")),
   );
   assert(
@@ -282,6 +285,31 @@ test("rejects browser coverage without WebKit", async () => {
       result.errors.some(
         (error) =>
           error.includes("browser-coverage-matrix contract") &&
+          error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects canary releases without a 50 percent step", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "canary-release-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("percentage: 50", "percentage: 25"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("canary-release-policy contract") &&
           error.includes("must contain at least 1 valid item"),
       ),
     );

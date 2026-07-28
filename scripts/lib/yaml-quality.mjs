@@ -43,6 +43,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/canary-release-policy.yaml",
+    name: "canary-release-policy",
+    schema: "schemas/canary-release-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/contract-test-policy.yaml",
     name: "contract-test-policy",
     schema: "schemas/contract-test-policy.schema.json",

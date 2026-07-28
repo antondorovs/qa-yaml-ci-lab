@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/canary-release-policy.schema.json",
+  "title": "Canary release policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "strategy",
+    "trafficSteps",
+    "gates",
+    "rollback",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "releaseType",
+        "maximumDurationHours",
+        "rollbackWindowMinutes"
+      ],
+      "properties": {
+        "releaseType": {
+          "const": "canary"
+        },
+        "maximumDurationHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "rollbackWindowMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        }
+      }
+    },
+    "trafficSteps": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/trafficStep"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["percentage"],
+            "properties": {
+              "percentage": {
+                "const": 5
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["percentage"],
+            "properties": {
+              "percentage": {
+                "const": 50
+              }
+            }
+          }
+        }
+      ]
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/gate"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["metric"],
+            "properties": {
+              "metric": {
+                "const": "error-rate"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["metric"],
+            "properties": {
+              "metric": {
+                "const": "p95-latency"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automatic", "owner", "evidence"],
+      "properties": {
+        "automatic": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "const": "rollback-dashboard"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "trafficStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["percentage", "holdMinutes", "requiredSignal"],
+      "properties": {
+        "percentage": {
+          "enum": [5, 25, 50]
+        },
+        "holdMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        },
+        "requiredSignal": {
+          "enum": ["smoke-pass", "error-budget-ok", "latency-ok"]
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "threshold", "comparison", "owner"],
+      "properties": {
+        "metric": {
+          "enum": ["error-rate", "p95-latency"]
+        },
+        "threshold": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "comparison": {
+          "const": "less-than"
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    }
+  }
+}

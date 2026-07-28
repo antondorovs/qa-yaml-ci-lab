@@ -1,0 +1,32 @@
+version: 1
+strategy:
+  releaseType: canary
+  maximumDurationHours: 6
+  rollbackWindowMinutes: 30
+trafficSteps:
+  - percentage: 5
+    holdMinutes: 15
+    requiredSignal: smoke-pass
+  - percentage: 25
+    holdMinutes: 30
+    requiredSignal: error-budget-ok
+  - percentage: 50
+    holdMinutes: 45
+    requiredSignal: latency-ok
+gates:
+  - metric: error-rate
+    threshold: 1
+    comparison: less-than
+    owner: sre
+  - metric: p95-latency
+    threshold: 500
+    comparison: less-than
+    owner: qa-automation
+rollback:
+  automatic: true
+  owner: release-manager
+  evidence: rollback-dashboard
+reporting:
+  format: json
+  path: reports/canary-release.json
+  retentionDays: 14
