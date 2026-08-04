@@ -71,6 +71,9 @@ test("validates every repository YAML file and registered contracts", async () =
     ),
   );
   assert(
+    result.files.some((file) => file.endsWith("dependency-update-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("browser-coverage-matrix.yaml")),
   );
   assert(
@@ -413,6 +416,34 @@ test("rejects deployment rollback without automatic recovery", async () => {
       result.errors.some(
         (error) =>
           error.includes("deployment-rollback-policy contract") &&
+          error.includes("must be equal to constant"),
+      ),
+    );
+  });
+});
+
+test("rejects dependency updates that allow critical vulnerabilities", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "dependency-update-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "blockCriticalVulnerabilities: true",
+        "blockCriticalVulnerabilities: false",
+      ),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("dependency-update-policy contract") &&
           error.includes("must be equal to constant"),
       ),
     );

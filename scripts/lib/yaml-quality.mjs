@@ -73,6 +73,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/dependency-update-policy.yaml",
+    name: "dependency-update-policy",
+    schema: "schemas/dependency-update-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/flaky-test-policy.yaml",
     name: "flaky-test-policy",
     schema: "schemas/flaky-test-policy.schema.json",

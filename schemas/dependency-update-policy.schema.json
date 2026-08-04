@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/dependency-update-policy.schema.json",
+  "title": "Dependency update policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "cadence", "updates", "checks", "risk", "reporting"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "cadence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schedule", "day", "maximumAgeDays"],
+      "properties": {
+        "schedule": {
+          "const": "weekly"
+        },
+        "day": {
+          "enum": ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        },
+        "maximumAgeDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    },
+    "updates": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/update"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["level"],
+            "properties": {
+              "level": {
+                "const": "patch"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["level"],
+            "properties": {
+              "level": {
+                "const": "minor"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["level"],
+            "properties": {
+              "level": {
+                "const": "major"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "dependency-audit"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "regression"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "license-review"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockCriticalVulnerabilities",
+        "rollbackPlanRequired",
+        "maximumOpenDays"
+      ],
+      "properties": {
+        "blockCriticalVulnerabilities": {
+          "const": true
+        },
+        "rollbackPlanRequired": {
+          "const": true
+        },
+        "maximumOpenDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "update": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "automaticMerge", "approvalCount"],
+      "properties": {
+        "level": {
+          "enum": ["patch", "minor", "major"]
+        },
+        "automaticMerge": {
+          "type": "boolean"
+        },
+        "approvalCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "level": {
+                "const": "major"
+              }
+            },
+            "required": ["level"]
+          },
+          "then": {
+            "properties": {
+              "automaticMerge": {
+                "const": false
+              },
+              "approvalCount": {
+                "type": "integer",
+                "minimum": 2
+              }
+            }
+          }
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["dependency-audit", "regression", "license-review"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": [
+            "dependency-audit-report",
+            "regression-report",
+            "license-report"
+          ]
+        }
+      }
+    }
+  }
+}

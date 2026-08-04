@@ -20,6 +20,7 @@ Schema contracts to QA-specific examples.
 - defect triage severity, intake and escalation rules
 - deployment approval rules for staging and production
 - deployment rollback triggers, thresholds and verification
+- dependency update cadence, risk controls and required evidence
 - environment variable matrix structure and required runtime URLs
 - flaky-test rerun and quarantine rules
 - hotfix validation for smoke, targeted regression and rollback readiness
@@ -99,6 +100,7 @@ npm test
 |-- examples/defect-triage-policy.yaml
 |-- examples/deployment-approval-policy.yaml
 |-- examples/deployment-rollback-policy.yaml
+|-- examples/dependency-update-policy.yaml
 |-- examples/environment-matrix.yaml
 |-- examples/flaky-test-policy.yaml
 |-- examples/hotfix-validation-policy.yaml
@@ -125,6 +127,7 @@ npm test
 |   |-- defect-triage-policy.schema.json
 |   |-- deployment-approval-policy.schema.json
 |   |-- deployment-rollback-policy.schema.json
+|   |-- dependency-update-policy.schema.json
 |   |-- environment-matrix.schema.json
 |   |-- flaky-test-policy.schema.json
 |   |-- hotfix-validation-policy.schema.json
@@ -180,6 +183,8 @@ Production deployments require regression checks, two approvals and automatic
 freezing when a required check fails.
 Rollback starts automatically on health or error-rate failures, targets the
 previous stable release and requires health and smoke verification.
+Dependency update policies must review packages every week, require security,
+regression and license evidence, and keep major updates behind two approvals.
 Flaky tests can be rerun only for transient failures and must leave quarantine
 within 30 days with an assigned owner and issue.
 Hotfix validation policies must keep smoke, targeted regression and rollback

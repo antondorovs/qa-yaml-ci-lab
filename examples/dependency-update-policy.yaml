@@ -1,0 +1,36 @@
+version: 1
+cadence:
+  schedule: weekly
+  day: tuesday
+  maximumAgeDays: 30
+updates:
+  - level: patch
+    automaticMerge: true
+    approvalCount: 1
+  - level: minor
+    automaticMerge: false
+    approvalCount: 1
+  - level: major
+    automaticMerge: false
+    approvalCount: 2
+checks:
+  - name: dependency-audit
+    required: true
+    owner: security
+    evidence: dependency-audit-report
+  - name: regression
+    required: true
+    owner: qa-automation
+    evidence: regression-report
+  - name: license-review
+    required: true
+    owner: compliance
+    evidence: license-report
+risk:
+  blockCriticalVulnerabilities: true
+  rollbackPlanRequired: true
+  maximumOpenDays: 14
+reporting:
+  format: json
+  path: reports/dependency-update.json
+  retentionDays: 14
