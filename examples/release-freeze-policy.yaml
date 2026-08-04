@@ -1,0 +1,27 @@
+version: 1
+window:
+  startsBeforeReleaseHours: 48
+  endsAfterReleaseHours: 2
+  owner: release-manager
+controls:
+  branchProtection: true
+  deploymentLock: true
+  changeTicketRequired: true
+exceptions:
+  - type: critical-hotfix
+    approvalCount: 2
+    requiredChecks:
+      - smoke
+      - targeted-regression
+      - rollback-readiness
+    owner: incident-commander
+resume:
+  requiredChecks:
+    - smoke
+    - observability
+  approvalRequired: true
+  owner: release-manager
+reporting:
+  format: json
+  path: reports/release-freeze.json
+  retentionDays: 14

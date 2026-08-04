@@ -121,6 +121,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/release-freeze-policy.yaml",
+    name: "release-freeze-policy",
+    schema: "schemas/release-freeze-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/release-risk-assessment-policy.yaml",
     name: "release-risk-assessment-policy",
     schema: "schemas/release-risk-assessment-policy.schema.json",

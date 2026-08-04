@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/release-freeze-policy.schema.json",
+  "title": "Release freeze policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "window",
+    "controls",
+    "exceptions",
+    "resume",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startsBeforeReleaseHours",
+        "endsAfterReleaseHours",
+        "owner"
+      ],
+      "properties": {
+        "startsBeforeReleaseHours": {
+          "type": "integer",
+          "minimum": 24,
+          "maximum": 168
+        },
+        "endsAfterReleaseHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "branchProtection",
+        "deploymentLock",
+        "changeTicketRequired"
+      ],
+      "properties": {
+        "branchProtection": {
+          "const": true
+        },
+        "deploymentLock": {
+          "const": true
+        },
+        "changeTicketRequired": {
+          "const": true
+        }
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "$ref": "#/$defs/exception"
+      },
+      "contains": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "const": "critical-hotfix"
+          }
+        }
+      }
+    },
+    "resume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredChecks", "approvalRequired", "owner"],
+      "properties": {
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["smoke", "observability"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "smoke"
+              }
+            },
+            {
+              "contains": {
+                "const": "observability"
+              }
+            }
+          ]
+        },
+        "approvalRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "approvalCount", "requiredChecks", "owner"],
+      "properties": {
+        "type": {
+          "const": "critical-hotfix"
+        },
+        "approvalCount": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 3
+        },
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["smoke", "targeted-regression", "rollback-readiness"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "smoke"
+              }
+            },
+            {
+              "contains": {
+                "const": "targeted-regression"
+              }
+            },
+            {
+              "contains": {
+                "const": "rollback-readiness"
+              }
+            }
+          ]
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    }
+  }
+}

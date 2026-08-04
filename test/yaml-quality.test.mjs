@@ -106,6 +106,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(
+    result.files.some((file) => file.endsWith("release-freeze-policy.yaml")),
+  );
+  assert(
     result.files.some((file) =>
       file.endsWith("release-risk-assessment-policy.yaml"),
     ),
@@ -617,6 +620,31 @@ test("rejects release risk assessments above the risk limit", async () => {
         (error) =>
           error.includes("release-risk-assessment-policy contract") &&
           error.includes("must be <= 3"),
+      ),
+    );
+  });
+});
+
+test("rejects release freeze exceptions without two approvals", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "release-freeze-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("approvalCount: 2", "approvalCount: 1"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("release-freeze-policy contract") &&
+          error.includes("must be >= 2"),
       ),
     );
   });
