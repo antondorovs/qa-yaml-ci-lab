@@ -16,6 +16,7 @@ Schema contracts to QA-specific examples.
 - backup encryption, restore objectives and recovery drill evidence
 - browser coverage across Chromium, Firefox and WebKit
 - canary release traffic steps, metrics and rollback readiness
+- change failure rate measurement, evidence and release thresholds
 - contract test coverage for providers and event schemas
 - QA test plan structure and required fields for every named test plan
 - defect triage severity, intake and escalation rules
@@ -99,6 +100,7 @@ npm test
 |-- examples/backup-recovery-policy.yaml
 |-- examples/browser-coverage-matrix.yaml
 |-- examples/canary-release-policy.yaml
+|-- examples/change-failure-rate-policy.yaml
 |-- examples/contract-test-policy.yaml
 |-- examples/defect-triage-policy.yaml
 |-- examples/deployment-approval-policy.yaml
@@ -128,6 +130,7 @@ npm test
 |   |-- backup-recovery-policy.schema.json
 |   |-- browser-coverage-matrix.schema.json
 |   |-- canary-release-policy.schema.json
+|   |-- change-failure-rate-policy.schema.json
 |   |-- contract-test-policy.schema.json
 |   |-- defect-triage-policy.schema.json
 |   |-- deployment-approval-policy.schema.json
@@ -181,6 +184,8 @@ Browser coverage matrices must include Chromium, Firefox and WebKit with smoke
 coverage, plus desktop and mobile viewports for release confidence.
 Canary release policies must include 5 and 50 percent traffic steps, release
 health gates and automatic rollback evidence before rollout expansion.
+Change failure rate policies must count rollbacks, hotfixes and production
+incidents, require fresh deployment evidence and block releases above ten percent.
 Contract test policies must require consumer-provider and event-schema coverage
 with published verification before release.
 Defect triage policies must keep critical response times tight and require

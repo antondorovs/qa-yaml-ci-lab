@@ -1,0 +1,35 @@
+version: 1
+measurement:
+  windowDays: 30
+  targetPercent: 10
+  minimumDeployments: 10
+  successfulDeployment: production-verified
+  owner: release-analytics
+failureEvents:
+  - rollback
+  - hotfix
+  - production-incident
+gates:
+  - name: maximum-failure-rate
+    comparison: less-than-or-equal
+    threshold: 10
+    required: true
+  - name: minimum-sample-size
+    comparison: greater-than-or-equal
+    threshold: 10
+    required: true
+evidence:
+  sources:
+    - deployment-report
+    - incident-log
+    - rollback-log
+  freshnessHours: 24
+  owner: release-manager
+review:
+  cadence: weekly
+  failureBlocksRelease: true
+  remediationOwner: qa-lead
+reporting:
+  format: json
+  path: reports/change-failure-rate.json
+  retentionDays: 30

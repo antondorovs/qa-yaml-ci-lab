@@ -83,6 +83,11 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("canary-release-policy.yaml")),
   );
   assert(
+    result.files.some((file) =>
+      file.endsWith("change-failure-rate-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("contract-test-policy.yaml")),
   );
   assert(
@@ -348,6 +353,31 @@ test("rejects canary releases without a 50 percent step", async () => {
         (error) =>
           error.includes("canary-release-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects change failure rate targets above ten percent", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "change-failure-rate-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("targetPercent: 10", "targetPercent: 15"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("change-failure-rate-policy contract") &&
+          error.includes("must be <= 10"),
       ),
     );
   });

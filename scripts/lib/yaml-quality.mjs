@@ -55,6 +55,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/change-failure-rate-policy.yaml",
+    name: "change-failure-rate-policy",
+    schema: "schemas/change-failure-rate-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/contract-test-policy.yaml",
     name: "contract-test-policy",
     schema: "schemas/contract-test-policy.schema.json",

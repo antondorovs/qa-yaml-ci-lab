@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/change-failure-rate-policy.schema.json",
+  "title": "Change failure rate policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "measurement",
+    "failureEvents",
+    "gates",
+    "evidence",
+    "review",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "windowDays",
+        "targetPercent",
+        "minimumDeployments",
+        "successfulDeployment",
+        "owner"
+      ],
+      "properties": {
+        "windowDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        },
+        "targetPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "minimumDeployments": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "successfulDeployment": {
+          "const": "production-verified"
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "failureEvents": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["rollback", "hotfix", "production-incident"]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "rollback"
+          }
+        },
+        {
+          "contains": {
+            "const": "hotfix"
+          }
+        },
+        {
+          "contains": {
+            "const": "production-incident"
+          }
+        }
+      ]
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/gate"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "maximum-failure-rate"
+              },
+              "comparison": {
+                "const": "less-than-or-equal"
+              },
+              "threshold": {
+                "type": "number",
+                "maximum": 10
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "minimum-sample-size"
+              },
+              "comparison": {
+                "const": "greater-than-or-equal"
+              },
+              "threshold": {
+                "type": "number",
+                "minimum": 10
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sources", "freshnessHours", "owner"],
+      "properties": {
+        "sources": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["deployment-report", "incident-log", "rollback-log"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "deployment-report"
+              }
+            },
+            {
+              "contains": {
+                "const": "incident-log"
+              }
+            },
+            {
+              "contains": {
+                "const": "rollback-log"
+              }
+            }
+          ]
+        },
+        "freshnessHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cadence", "failureBlocksRelease", "remediationOwner"],
+      "properties": {
+        "cadence": {
+          "const": "weekly"
+        },
+        "failureBlocksRelease": {
+          "const": true
+        },
+        "remediationOwner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "comparison", "threshold", "required"],
+      "properties": {
+        "name": {
+          "enum": ["maximum-failure-rate", "minimum-sample-size"]
+        },
+        "comparison": {
+          "enum": ["less-than-or-equal", "greater-than-or-equal"]
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "required": {
+          "const": true
+        }
+      }
+    }
+  }
+}
