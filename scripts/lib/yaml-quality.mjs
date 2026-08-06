@@ -85,6 +85,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/feature-flag-policy.yaml",
+    name: "feature-flag-policy",
+    schema: "schemas/feature-flag-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/hotfix-validation-policy.yaml",
     name: "hotfix-validation-policy",
     schema: "schemas/hotfix-validation-policy.schema.json",

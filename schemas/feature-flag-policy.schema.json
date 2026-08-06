@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/feature-flag-policy.schema.json",
+  "title": "Feature flag policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lifecycle",
+    "rollout",
+    "controls",
+    "checks",
+    "cleanup",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaultState", "maximumLifetimeDays", "owner"],
+      "properties": {
+        "defaultState": {
+          "const": "off"
+        },
+        "maximumLifetimeDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 90
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "rollout": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/rolloutStage"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["percentage"],
+            "properties": {
+              "percentage": {
+                "const": 5
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["percentage"],
+            "properties": {
+              "percentage": {
+                "const": 50
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["percentage"],
+            "properties": {
+              "percentage": {
+                "const": 100
+              }
+            }
+          }
+        }
+      ]
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["killSwitch", "auditLog", "expirationRequired"],
+      "properties": {
+        "killSwitch": {
+          "const": true
+        },
+        "auditLog": {
+          "const": true
+        },
+        "expirationRequired": {
+          "const": true
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "smoke"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "regression"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "observability"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["removalRequired", "maximumDaysAfterFullRollout", "owner"],
+      "properties": {
+        "removalRequired": {
+          "const": true
+        },
+        "maximumDaysAfterFullRollout": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 14
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      }
+    }
+  },
+  "$defs": {
+    "rolloutStage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["percentage", "requiredCheck"],
+      "properties": {
+        "percentage": {
+          "enum": [5, 50, 100]
+        },
+        "requiredCheck": {
+          "enum": ["smoke", "regression", "observability"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "percentage": {
+                "const": 5
+              }
+            },
+            "required": ["percentage"]
+          },
+          "then": {
+            "properties": {
+              "requiredCheck": {
+                "const": "smoke"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "percentage": {
+                "const": 50
+              }
+            },
+            "required": ["percentage"]
+          },
+          "then": {
+            "properties": {
+              "requiredCheck": {
+                "const": "regression"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "percentage": {
+                "const": 100
+              }
+            },
+            "required": ["percentage"]
+          },
+          "then": {
+            "properties": {
+              "requiredCheck": {
+                "const": "observability"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["smoke", "regression", "observability"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": ["smoke-report", "regression-report", "release-dashboard"]
+        }
+      }
+    }
+  }
+}

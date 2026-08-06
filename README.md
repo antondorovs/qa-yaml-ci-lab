@@ -22,6 +22,7 @@ Schema contracts to QA-specific examples.
 - deployment rollback triggers, thresholds and verification
 - dependency update cadence, risk controls and required evidence
 - environment variable matrix structure and required runtime URLs
+- feature flag rollout, emergency controls and cleanup deadlines
 - flaky-test rerun and quarantine rules
 - hotfix validation for smoke, targeted regression and rollback readiness
 - incident review deadlines, sections and follow-up ownership
@@ -102,6 +103,7 @@ npm test
 |-- examples/deployment-rollback-policy.yaml
 |-- examples/dependency-update-policy.yaml
 |-- examples/environment-matrix.yaml
+|-- examples/feature-flag-policy.yaml
 |-- examples/flaky-test-policy.yaml
 |-- examples/hotfix-validation-policy.yaml
 |-- examples/incident-review-policy.yaml
@@ -129,6 +131,7 @@ npm test
 |   |-- deployment-rollback-policy.schema.json
 |   |-- dependency-update-policy.schema.json
 |   |-- environment-matrix.schema.json
+|   |-- feature-flag-policy.schema.json
 |   |-- flaky-test-policy.schema.json
 |   |-- hotfix-validation-policy.schema.json
 |   |-- incident-review-policy.schema.json
@@ -179,6 +182,8 @@ Defect triage policies must keep critical response times tight and require
 reproduction details before escalation.
 Environment matrices must define a `BASE_URL` variable for each supported
 environment so CI jobs and Kubernetes examples can share the same target names.
+Feature flag policies must start disabled, advance through smoke, regression and
+observability gates, provide a kill switch and remove completed flags promptly.
 Production deployments require regression checks, two approvals and automatic
 freezing when a required check fails.
 Rollback starts automatically on health or error-rate failures, targets the

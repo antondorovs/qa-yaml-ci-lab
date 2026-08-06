@@ -88,6 +88,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
+    result.files.some((file) => file.endsWith("feature-flag-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("hotfix-validation-policy.yaml")),
   );
   assert(
@@ -467,6 +470,31 @@ test("rejects expired flaky-test quarantine windows", async () => {
         (error) =>
           error.includes("flaky-test-policy contract") &&
           error.includes("must be <= 30"),
+      ),
+    );
+  });
+});
+
+test("rejects feature flags without a kill switch", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "feature-flag-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("killSwitch: true", "killSwitch: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("feature-flag-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

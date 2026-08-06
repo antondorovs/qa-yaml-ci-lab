@@ -1,0 +1,37 @@
+version: 1
+lifecycle:
+  defaultState: off
+  maximumLifetimeDays: 90
+  owner: product-platform
+rollout:
+  - percentage: 5
+    requiredCheck: smoke
+  - percentage: 50
+    requiredCheck: regression
+  - percentage: 100
+    requiredCheck: observability
+controls:
+  killSwitch: true
+  auditLog: true
+  expirationRequired: true
+checks:
+  - name: smoke
+    required: true
+    owner: qa-automation
+    evidence: smoke-report
+  - name: regression
+    required: true
+    owner: qa-lead
+    evidence: regression-report
+  - name: observability
+    required: true
+    owner: sre
+    evidence: release-dashboard
+cleanup:
+  removalRequired: true
+  maximumDaysAfterFullRollout: 14
+  owner: product-platform
+reporting:
+  format: json
+  path: reports/feature-flag.json
+  retentionDays: 14
