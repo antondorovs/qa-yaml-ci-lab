@@ -1,0 +1,37 @@
+version: 1
+backup:
+  cadenceHours: 24
+  retentionDays: 30
+  encryptionRequired: true
+  immutableCopyRequired: true
+  owner: platform-operations
+recovery:
+  maximumDataLossMinutes: 60
+  maximumRecoveryMinutes: 120
+  environment: isolated
+drills:
+  schedule: quarterly
+  requiredScenarios:
+    - database-restore
+    - object-storage-restore
+    - configuration-restore
+  evidence: recovery-drill-report
+  owner: resilience-team
+verification:
+  - name: integrity-check
+    required: true
+    owner: platform-operations
+  - name: application-smoke
+    required: true
+    owner: qa-automation
+  - name: access-control
+    required: true
+    owner: security
+escalation:
+  failureBlocksRelease: true
+  ticketRequired: true
+  owner: incident-commander
+reporting:
+  format: json
+  path: reports/backup-recovery.json
+  retentionDays: 30

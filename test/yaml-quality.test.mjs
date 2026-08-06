@@ -56,6 +56,9 @@ test("validates every repository YAML file and registered contracts", async () =
       file.endsWith("accessibility-audit-policy.yaml"),
     ),
   );
+  assert(
+    result.files.some((file) => file.endsWith("backup-recovery-policy.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("qa-test-plan.yaml")));
   assert(
     result.files.some((file) => file.endsWith("api-regression-test-plan.yaml")),
@@ -248,6 +251,31 @@ test("rejects accessibility audits without keyboard coverage", async () => {
         (error) =>
           error.includes("accessibility-audit-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects unencrypted backups", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "backup-recovery-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("encryptionRequired: true", "encryptionRequired: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("backup-recovery-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

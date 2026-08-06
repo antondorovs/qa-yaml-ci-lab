@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/backup-recovery-policy.schema.json",
+  "title": "Backup recovery policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "backup",
+    "recovery",
+    "drills",
+    "verification",
+    "escalation",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "backup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cadenceHours",
+        "retentionDays",
+        "encryptionRequired",
+        "immutableCopyRequired",
+        "owner"
+      ],
+      "properties": {
+        "cadenceHours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        },
+        "encryptionRequired": {
+          "const": true
+        },
+        "immutableCopyRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximumDataLossMinutes",
+        "maximumRecoveryMinutes",
+        "environment"
+      ],
+      "properties": {
+        "maximumDataLossMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60
+        },
+        "maximumRecoveryMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "environment": {
+          "const": "isolated"
+        }
+      }
+    },
+    "drills": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schedule", "requiredScenarios", "evidence", "owner"],
+      "properties": {
+        "schedule": {
+          "enum": ["monthly", "quarterly"]
+        },
+        "requiredScenarios": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "database-restore",
+              "object-storage-restore",
+              "configuration-restore"
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "database-restore"
+              }
+            },
+            {
+              "contains": {
+                "const": "object-storage-restore"
+              }
+            },
+            {
+              "contains": {
+                "const": "configuration-restore"
+              }
+            }
+          ]
+        },
+        "evidence": {
+          "const": "recovery-drill-report"
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/verificationCheck"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "integrity-check"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "application-smoke"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "access-control"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failureBlocksRelease", "ticketRequired", "owner"],
+      "properties": {
+        "failureBlocksRelease": {
+          "const": true
+        },
+        "ticketRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "verificationCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner"],
+      "properties": {
+        "name": {
+          "enum": ["integrity-check", "application-smoke", "access-control"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    }
+  }
+}

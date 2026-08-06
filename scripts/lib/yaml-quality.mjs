@@ -31,6 +31,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/backup-recovery-policy.yaml",
+    name: "backup-recovery-policy",
+    schema: "schemas/backup-recovery-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/environment-matrix.yaml",
     name: "environment-matrix",
     schema: "schemas/environment-matrix.schema.json",
