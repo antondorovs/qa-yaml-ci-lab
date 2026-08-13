@@ -1,0 +1,39 @@
+version: 1
+deployment:
+  environment: production
+  verificationWindowMinutes: 30
+  owner: release-manager
+checks:
+  - name: smoke
+    required: true
+    owner: qa-automation
+    evidence: smoke-report
+  - name: regression
+    required: true
+    owner: qa-lead
+    evidence: regression-report
+  - name: observability
+    required: true
+    owner: sre
+    evidence: release-dashboard
+  - name: security
+    required: true
+    owner: security
+    evidence: security-report
+health:
+  errorRatePercentMaximum: 1
+  p95LatencyMillisecondsMaximum: 500
+  availabilityPercentMinimum: 99.9
+rollback:
+  automaticOnFailure: true
+  maximumMinutes: 15
+  owner: release-manager
+completion:
+  allChecksRequired: true
+  stakeholderApprovalRequired: true
+  statusPageUpdateRequired: true
+  owner: service-owner
+reporting:
+  format: json
+  path: reports/deployment-verification.json
+  retentionDays: 30

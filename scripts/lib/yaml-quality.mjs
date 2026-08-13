@@ -91,6 +91,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/deployment-verification-policy.yaml",
+    name: "deployment-verification-policy",
+    schema: "schemas/deployment-verification-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/dependency-update-policy.yaml",
     name: "dependency-update-policy",
     schema: "schemas/dependency-update-policy.schema.json",

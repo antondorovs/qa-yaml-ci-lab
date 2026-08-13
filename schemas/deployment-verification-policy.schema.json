@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/deployment-verification-policy.schema.json",
+  "title": "Deployment verification policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "deployment",
+    "checks",
+    "health",
+    "rollback",
+    "completion",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["environment", "verificationWindowMinutes", "owner"],
+      "properties": {
+        "environment": {
+          "const": "production"
+        },
+        "verificationWindowMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 60
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "smoke"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "regression"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "observability"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "security"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "errorRatePercentMaximum",
+        "p95LatencyMillisecondsMaximum",
+        "availabilityPercentMinimum"
+      ],
+      "properties": {
+        "errorRatePercentMaximum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "p95LatencyMillisecondsMaximum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "availabilityPercentMinimum": {
+          "type": "number",
+          "minimum": 99.9,
+          "maximum": 100
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automaticOnFailure", "maximumMinutes", "owner"],
+      "properties": {
+        "automaticOnFailure": {
+          "const": true
+        },
+        "maximumMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allChecksRequired",
+        "stakeholderApprovalRequired",
+        "statusPageUpdateRequired",
+        "owner"
+      ],
+      "properties": {
+        "allChecksRequired": {
+          "const": true
+        },
+        "stakeholderApprovalRequired": {
+          "const": true
+        },
+        "statusPageUpdateRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["smoke", "regression", "observability", "security"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": [
+            "smoke-report",
+            "regression-report",
+            "release-dashboard",
+            "security-report"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -23,6 +23,7 @@ Schema contracts to QA-specific examples.
 - defect triage severity, intake and escalation rules
 - deployment approval rules for staging and production
 - deployment rollback triggers, thresholds and verification
+- deployment health verification, observation and rollback controls
 - dependency update cadence, risk controls and required evidence
 - environment variable matrix structure and required runtime URLs
 - feature flag rollout, emergency controls and cleanup deadlines
@@ -108,6 +109,7 @@ npm test
 |-- examples/defect-triage-policy.yaml
 |-- examples/deployment-approval-policy.yaml
 |-- examples/deployment-rollback-policy.yaml
+|-- examples/deployment-verification-policy.yaml
 |-- examples/dependency-update-policy.yaml
 |-- examples/environment-matrix.yaml
 |-- examples/feature-flag-policy.yaml
@@ -140,6 +142,7 @@ npm test
 |   |-- defect-triage-policy.schema.json
 |   |-- deployment-approval-policy.schema.json
 |   |-- deployment-rollback-policy.schema.json
+|   |-- deployment-verification-policy.schema.json
 |   |-- dependency-update-policy.schema.json
 |   |-- environment-matrix.schema.json
 |   |-- feature-flag-policy.schema.json
@@ -206,6 +209,8 @@ Production deployments require regression checks, two approvals and automatic
 freezing when a required check fails.
 Rollback starts automatically on health or error-rate failures, targets the
 previous stable release and requires health and smoke verification.
+Deployment verification policies must require smoke, regression, observability
+and security evidence, enforce health targets and roll back failed releases.
 Dependency update policies must review packages every week, require security,
 regression and license evidence, and keep major updates behind two approvals.
 Flaky tests can be rerun only for transient failures and must leave quarantine
