@@ -115,6 +115,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/maintenance-window-policy.yaml",
+    name: "maintenance-window-policy",
+    schema: "schemas/maintenance-window-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/notification-policy.yaml",
     name: "notification-policy",
     schema: "schemas/notification-policy.schema.json",

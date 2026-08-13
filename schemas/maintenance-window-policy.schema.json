@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/maintenance-window-policy.schema.json",
+  "title": "Maintenance window policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "window",
+    "controls",
+    "checks",
+    "extension",
+    "completion",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maximumDurationMinutes",
+        "noticeHours",
+        "timezone",
+        "owner"
+      ],
+      "properties": {
+        "maximumDurationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 120
+        },
+        "noticeHours": {
+          "type": "integer",
+          "minimum": 24,
+          "maximum": 168
+        },
+        "timezone": {
+          "const": "UTC"
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "changeFreezeRequired",
+        "rollbackPlanRequired",
+        "statusPageRequired"
+      ],
+      "properties": {
+        "changeFreezeRequired": {
+          "const": true
+        },
+        "rollbackPlanRequired": {
+          "const": true
+        },
+        "statusPageRequired": {
+          "const": true
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "pre-maintenance-smoke"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "post-maintenance-smoke"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "service-monitoring"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "extension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvalRequired",
+        "maximumMinutes",
+        "stakeholderNoticeRequired",
+        "owner"
+      ],
+      "properties": {
+        "approvalRequired": {
+          "const": true
+        },
+        "maximumMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "stakeholderNoticeRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "healthVerificationRequired",
+        "statusPageUpdateRequired",
+        "owner"
+      ],
+      "properties": {
+        "healthVerificationRequired": {
+          "const": true
+        },
+        "statusPageUpdateRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": [
+            "pre-maintenance-smoke",
+            "post-maintenance-smoke",
+            "service-monitoring"
+          ]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": [
+            "pre-maintenance-report",
+            "post-maintenance-report",
+            "service-dashboard"
+          ]
+        }
+      }
+    }
+  }
+}

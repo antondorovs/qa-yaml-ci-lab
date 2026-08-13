@@ -105,6 +105,11 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("incident-review-policy.yaml")),
   );
   assert(
+    result.files.some((file) =>
+      file.endsWith("maintenance-window-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("notification-policy.yaml")),
   );
   assert(
@@ -603,6 +608,34 @@ test("rejects incident reviews without root-cause sections", async () => {
         (error) =>
           error.includes("incident-review-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects maintenance windows without a change freeze", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "maintenance-window-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "changeFreezeRequired: true",
+        "changeFreezeRequired: false",
+      ),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("maintenance-window-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

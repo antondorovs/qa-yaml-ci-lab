@@ -1,0 +1,36 @@
+version: 1
+window:
+  maximumDurationMinutes: 120
+  noticeHours: 48
+  timezone: UTC
+  owner: platform-operations
+controls:
+  changeFreezeRequired: true
+  rollbackPlanRequired: true
+  statusPageRequired: true
+checks:
+  - name: pre-maintenance-smoke
+    required: true
+    owner: qa-automation
+    evidence: pre-maintenance-report
+  - name: post-maintenance-smoke
+    required: true
+    owner: qa-automation
+    evidence: post-maintenance-report
+  - name: service-monitoring
+    required: true
+    owner: sre
+    evidence: service-dashboard
+extension:
+  approvalRequired: true
+  maximumMinutes: 60
+  stakeholderNoticeRequired: true
+  owner: incident-commander
+completion:
+  healthVerificationRequired: true
+  statusPageUpdateRequired: true
+  owner: release-manager
+reporting:
+  format: json
+  path: reports/maintenance-window.json
+  retentionDays: 30
