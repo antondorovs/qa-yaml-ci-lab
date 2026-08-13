@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/data-migration-policy.schema.json",
+  "title": "Data migration policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "preparation",
+    "execution",
+    "checks",
+    "rollback",
+    "completion",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "preparation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backupRequired",
+        "dryRunRequired",
+        "rollbackPlanRequired",
+        "owner"
+      ],
+      "properties": {
+        "backupRequired": {
+          "const": true
+        },
+        "dryRunRequired": {
+          "const": true
+        },
+        "rollbackPlanRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "batchSize",
+        "maximumDurationMinutes",
+        "maintenanceWindowRequired"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "phased"
+        },
+        "batchSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "maximumDurationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "maintenanceWindowRequired": {
+          "const": true
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "schema-compatibility"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "record-reconciliation"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "application-smoke"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automaticOnFailure", "maximumMinutes", "owner"],
+      "properties": {
+        "automaticOnFailure": {
+          "const": true
+        },
+        "maximumMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceTargetMatchRequired",
+        "auditTrailRequired",
+        "stakeholderApprovalRequired",
+        "owner"
+      ],
+      "properties": {
+        "sourceTargetMatchRequired": {
+          "const": true
+        },
+        "auditTrailRequired": {
+          "const": true
+        },
+        "stakeholderApprovalRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 7,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": [
+            "schema-compatibility",
+            "record-reconciliation",
+            "application-smoke"
+          ]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": [
+            "schema-check-report",
+            "reconciliation-report",
+            "smoke-report"
+          ]
+        }
+      }
+    }
+  }
+}

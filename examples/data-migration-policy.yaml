@@ -1,0 +1,37 @@
+version: 1
+preparation:
+  backupRequired: true
+  dryRunRequired: true
+  rollbackPlanRequired: true
+  owner: data-platform
+execution:
+  strategy: phased
+  batchSize: 1000
+  maximumDurationMinutes: 120
+  maintenanceWindowRequired: true
+checks:
+  - name: schema-compatibility
+    required: true
+    owner: data-platform
+    evidence: schema-check-report
+  - name: record-reconciliation
+    required: true
+    owner: qa-automation
+    evidence: reconciliation-report
+  - name: application-smoke
+    required: true
+    owner: qa-lead
+    evidence: smoke-report
+rollback:
+  automaticOnFailure: true
+  maximumMinutes: 30
+  owner: release-manager
+completion:
+  sourceTargetMatchRequired: true
+  auditTrailRequired: true
+  stakeholderApprovalRequired: true
+  owner: data-owner
+reporting:
+  format: json
+  path: reports/data-migration.json
+  retentionDays: 30

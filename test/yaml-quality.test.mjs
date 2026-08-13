@@ -93,6 +93,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("defect-triage-policy.yaml")),
   );
+  assert(
+    result.files.some((file) => file.endsWith("data-migration-policy.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
@@ -433,6 +436,31 @@ test("rejects critical defect triage with slow response", async () => {
         (error) =>
           error.includes("defect-triage-policy contract") &&
           error.includes("must be <= 4"),
+      ),
+    );
+  });
+});
+
+test("rejects data migrations without a backup", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "data-migration-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("backupRequired: true", "backupRequired: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("data-migration-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

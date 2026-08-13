@@ -73,6 +73,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/data-migration-policy.yaml",
+    name: "data-migration-policy",
+    schema: "schemas/data-migration-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/deployment-approval-policy.yaml",
     name: "deployment-approval-policy",
     schema: "schemas/deployment-approval-policy.schema.json",
