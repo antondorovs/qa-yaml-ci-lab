@@ -1,0 +1,34 @@
+version: 1
+change:
+  ticketRequired: true
+  peerReviewCount: 2
+  dryRunRequired: true
+  owner: configuration-platform
+targets:
+  - environment: staging
+    verificationMinutes: 15
+  - environment: production
+    verificationMinutes: 30
+checks:
+  - name: schema-validation
+    required: true
+    evidence: schema-report
+  - name: integration
+    required: true
+    evidence: integration-report
+  - name: smoke
+    required: true
+    evidence: smoke-report
+rollout:
+  strategy: staged
+  automaticRollbackRequired: true
+  rollbackWindowMinutes: 60
+  backupRequired: true
+controls:
+  driftDetectionRequired: true
+  secretValuesProhibited: true
+  auditLogRequired: true
+reporting:
+  format: json
+  path: reports/configuration-change.json
+  retentionDays: 90

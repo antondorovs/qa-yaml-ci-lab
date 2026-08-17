@@ -101,6 +101,11 @@ test("validates every repository YAML file and registered contracts", async () =
     ),
   );
   assert(
+    result.files.some((file) =>
+      file.endsWith("configuration-change-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("contract-test-policy.yaml")),
   );
   assert(
@@ -452,6 +457,34 @@ test("rejects change failure rate targets above ten percent", async () => {
         (error) =>
           error.includes("change-failure-rate-policy contract") &&
           error.includes("must be <= 10"),
+      ),
+    );
+  });
+});
+
+test("rejects configuration changes without automatic rollback", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "configuration-change-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "automaticRollbackRequired: true",
+        "automaticRollbackRequired: false",
+      ),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("configuration-change-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

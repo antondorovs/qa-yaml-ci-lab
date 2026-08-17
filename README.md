@@ -19,6 +19,7 @@ Schema contracts to QA-specific examples.
 - capacity forecasts, load scenarios and infrastructure headroom
 - canary release traffic steps, metrics and rollback readiness
 - change failure rate measurement, evidence and release thresholds
+- configuration change review, staged rollout and drift controls
 - contract test coverage for providers and event schemas
 - data migration preparation, reconciliation and rollback safeguards
 - QA test plan structure and required fields for every named test plan
@@ -108,6 +109,7 @@ npm test
 |-- examples/capacity-validation-policy.yaml
 |-- examples/canary-release-policy.yaml
 |-- examples/change-failure-rate-policy.yaml
+|-- examples/configuration-change-policy.yaml
 |-- examples/contract-test-policy.yaml
 |-- examples/data-migration-policy.yaml
 |-- examples/defect-triage-policy.yaml
@@ -143,6 +145,7 @@ npm test
 |   |-- capacity-validation-policy.schema.json
 |   |-- canary-release-policy.schema.json
 |   |-- change-failure-rate-policy.schema.json
+|   |-- configuration-change-policy.schema.json
 |   |-- contract-test-policy.schema.json
 |   |-- data-migration-policy.schema.json
 |   |-- defect-triage-policy.schema.json
@@ -205,6 +208,8 @@ Canary release policies must include 5 and 50 percent traffic steps, release
 health gates and automatic rollback evidence before rollout expansion.
 Change failure rate policies must count rollbacks, hotfixes and production
 incidents, require fresh deployment evidence and block releases above ten percent.
+Configuration change policies must require reviewed dry runs, staged verification,
+automatic rollback, drift detection and auditable evidence for every change.
 Contract test policies must require consumer-provider and event-schema coverage
 with published verification before release.
 Data migration policies must require backup and dry-run preparation, phased

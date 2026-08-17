@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/configuration-change-policy.schema.json",
+  "title": "Configuration change policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "change",
+    "targets",
+    "checks",
+    "rollout",
+    "controls",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticketRequired",
+        "peerReviewCount",
+        "dryRunRequired",
+        "owner"
+      ],
+      "properties": {
+        "ticketRequired": {
+          "const": true
+        },
+        "peerReviewCount": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5
+        },
+        "dryRunRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/target"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["environment"],
+            "properties": {
+              "environment": {
+                "const": "staging"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["environment"],
+            "properties": {
+              "environment": {
+                "const": "production"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "schema-validation"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "integration"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "smoke"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "rollout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "automaticRollbackRequired",
+        "rollbackWindowMinutes",
+        "backupRequired"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "staged"
+        },
+        "automaticRollbackRequired": {
+          "const": true
+        },
+        "rollbackWindowMinutes": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 120
+        },
+        "backupRequired": {
+          "const": true
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "driftDetectionRequired",
+        "secretValuesProhibited",
+        "auditLogRequired"
+      ],
+      "properties": {
+        "driftDetectionRequired": {
+          "const": true
+        },
+        "secretValuesProhibited": {
+          "const": true
+        },
+        "auditLogRequired": {
+          "const": true
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 180
+        }
+      }
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["environment", "verificationMinutes"],
+      "properties": {
+        "environment": {
+          "enum": ["staging", "production"]
+        },
+        "verificationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 60
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["schema-validation", "integration", "smoke"]
+        },
+        "required": {
+          "const": true
+        },
+        "evidence": {
+          "enum": ["schema-report", "integration-report", "smoke-report"]
+        }
+      }
+    }
+  }
+}
