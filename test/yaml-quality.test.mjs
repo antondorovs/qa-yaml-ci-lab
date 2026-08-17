@@ -88,6 +88,11 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("browser-coverage-matrix.yaml")),
   );
   assert(
+    result.files.some((file) =>
+      file.endsWith("capacity-validation-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("canary-release-policy.yaml")),
   );
   assert(
@@ -369,6 +374,34 @@ test("rejects browser coverage without WebKit", async () => {
         (error) =>
           error.includes("browser-coverage-matrix contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects capacity plans without enough headroom", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "capacity-validation-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "minimumHeadroomPercent: 30",
+        "minimumHeadroomPercent: 15",
+      ),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("capacity-validation-policy contract") &&
+          error.includes("must be >= 30"),
       ),
     );
   });

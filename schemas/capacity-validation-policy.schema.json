@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/capacity-validation-policy.schema.json",
+  "title": "Capacity validation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "baseline",
+    "scenarios",
+    "infrastructure",
+    "resilience",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expectedPeakRequestsPerSecond",
+        "minimumHeadroomPercent",
+        "forecastWindowDays"
+      ],
+      "properties": {
+        "expectedPeakRequestsPerSecond": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minimumHeadroomPercent": {
+          "type": "number",
+          "minimum": 30,
+          "maximum": 100
+        },
+        "forecastWindowDays": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 365
+        }
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/scenario"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "sustained-load"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "burst-load"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "failover-load"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "infrastructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpuUtilizationPercentMaximum",
+        "memoryUtilizationPercentMaximum",
+        "autoscalingRequired",
+        "minimumReplicas",
+        "maximumReplicas",
+        "scaleOutSecondsMaximum"
+      ],
+      "properties": {
+        "cpuUtilizationPercentMaximum": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 70
+        },
+        "memoryUtilizationPercentMaximum": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 75
+        },
+        "autoscalingRequired": {
+          "const": true
+        },
+        "minimumReplicas": {
+          "type": "integer",
+          "minimum": 3
+        },
+        "maximumReplicas": {
+          "type": "integer",
+          "minimum": 6
+        },
+        "scaleOutSecondsMaximum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        }
+      }
+    },
+    "resilience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zoneFailureTested",
+        "rollbackRequired",
+        "approvalCount",
+        "owner"
+      ],
+      "properties": {
+        "zoneFailureTested": {
+          "const": true
+        },
+        "rollbackRequired": {
+          "const": true
+        },
+        "approvalCount": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 14,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "trafficPercentOfPeak",
+        "durationMinutes",
+        "p95LatencyMillisecondsMaximum",
+        "errorRatePercentMaximum"
+      ],
+      "properties": {
+        "name": {
+          "enum": ["sustained-load", "burst-load", "failover-load"]
+        },
+        "trafficPercentOfPeak": {
+          "type": "number",
+          "minimum": 100,
+          "maximum": 200
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 240
+        },
+        "p95LatencyMillisecondsMaximum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "errorRatePercentMaximum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "sustained-load"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "durationMinutes": {
+                "type": "integer",
+                "minimum": 60
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "burst-load"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "trafficPercentOfPeak": {
+                "type": "number",
+                "minimum": 130
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "failover-load"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "durationMinutes": {
+                "type": "integer",
+                "minimum": 30
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

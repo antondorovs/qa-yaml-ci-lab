@@ -1,0 +1,37 @@
+version: 1
+baseline:
+  expectedPeakRequestsPerSecond: 1200
+  minimumHeadroomPercent: 30
+  forecastWindowDays: 90
+scenarios:
+  - name: sustained-load
+    trafficPercentOfPeak: 100
+    durationMinutes: 60
+    p95LatencyMillisecondsMaximum: 500
+    errorRatePercentMaximum: 1
+  - name: burst-load
+    trafficPercentOfPeak: 130
+    durationMinutes: 15
+    p95LatencyMillisecondsMaximum: 500
+    errorRatePercentMaximum: 1
+  - name: failover-load
+    trafficPercentOfPeak: 100
+    durationMinutes: 30
+    p95LatencyMillisecondsMaximum: 500
+    errorRatePercentMaximum: 1
+infrastructure:
+  cpuUtilizationPercentMaximum: 70
+  memoryUtilizationPercentMaximum: 75
+  autoscalingRequired: true
+  minimumReplicas: 3
+  maximumReplicas: 12
+  scaleOutSecondsMaximum: 120
+resilience:
+  zoneFailureTested: true
+  rollbackRequired: true
+  approvalCount: 2
+  owner: performance-team
+reporting:
+  format: json
+  path: reports/capacity-validation.json
+  retentionDays: 30

@@ -16,6 +16,7 @@ Schema contracts to QA-specific examples.
 - API deprecation notice, compatibility and shutdown safeguards
 - backup encryption, restore objectives and recovery drill evidence
 - browser coverage across Chromium, Firefox and WebKit
+- capacity forecasts, load scenarios and infrastructure headroom
 - canary release traffic steps, metrics and rollback readiness
 - change failure rate measurement, evidence and release thresholds
 - contract test coverage for providers and event schemas
@@ -104,6 +105,7 @@ npm test
 |-- examples/api-regression-test-plan.yaml
 |-- examples/backup-recovery-policy.yaml
 |-- examples/browser-coverage-matrix.yaml
+|-- examples/capacity-validation-policy.yaml
 |-- examples/canary-release-policy.yaml
 |-- examples/change-failure-rate-policy.yaml
 |-- examples/contract-test-policy.yaml
@@ -138,6 +140,7 @@ npm test
 |   |-- api-deprecation-policy.schema.json
 |   |-- backup-recovery-policy.schema.json
 |   |-- browser-coverage-matrix.schema.json
+|   |-- capacity-validation-policy.schema.json
 |   |-- canary-release-policy.schema.json
 |   |-- change-failure-rate-policy.schema.json
 |   |-- contract-test-policy.schema.json
@@ -196,6 +199,8 @@ Backup recovery policies must require encrypted immutable copies, bounded data
 loss and recovery times, isolated restore drills and release-blocking evidence.
 Browser coverage matrices must include Chromium, Firefox and WebKit with smoke
 coverage, plus desktop and mobile viewports for release confidence.
+Capacity validation policies must reserve forecast headroom, exercise sustained,
+burst and failover loads, and require safe resource and scaling limits.
 Canary release policies must include 5 and 50 percent traffic steps, release
 health gates and automatic rollback evidence before rollout expansion.
 Change failure rate policies must count rollbacks, hotfixes and production
