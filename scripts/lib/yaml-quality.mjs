@@ -31,6 +31,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/api-deprecation-policy.yaml",
+    name: "api-deprecation-policy",
+    schema: "schemas/api-deprecation-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/backup-recovery-policy.yaml",
     name: "backup-recovery-policy",
     schema: "schemas/backup-recovery-policy.schema.json",

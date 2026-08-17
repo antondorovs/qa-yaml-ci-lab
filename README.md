@@ -13,6 +13,7 @@ Schema contracts to QA-specific examples.
 - duplicate mapping keys
 - formatting with Prettier
 - accessibility audit coverage for critical release checks
+- API deprecation notice, compatibility and shutdown safeguards
 - backup encryption, restore objectives and recovery drill evidence
 - browser coverage across Chromium, Firefox and WebKit
 - canary release traffic steps, metrics and rollback readiness
@@ -99,6 +100,7 @@ npm test
 |-- .github/workflows/quality-gate.yml
 |-- .dockerignore
 |-- examples/accessibility-audit-policy.yaml
+|-- examples/api-deprecation-policy.yaml
 |-- examples/api-regression-test-plan.yaml
 |-- examples/backup-recovery-policy.yaml
 |-- examples/browser-coverage-matrix.yaml
@@ -133,6 +135,7 @@ npm test
 |-- k8s/smoke-test-job.yaml
 |-- schemas/
 |   |-- accessibility-audit-policy.schema.json
+|   |-- api-deprecation-policy.schema.json
 |   |-- backup-recovery-policy.schema.json
 |   |-- browser-coverage-matrix.schema.json
 |   |-- canary-release-policy.schema.json
@@ -187,6 +190,8 @@ examples/qa-test-plan.yaml: qa-test-plan contract /tests/0 must have required pr
 
 Accessibility audit policies must keep WCAG 2.2 AA checks for keyboard
 navigation, color contrast and ARIA labels in the release gate.
+API deprecation policies must provide adequate notice, parallel compatibility,
+consumer evidence and monitored approval before an old version is shut down.
 Backup recovery policies must require encrypted immutable copies, bounded data
 loss and recovery times, isolated restore drills and release-blocking evidence.
 Browser coverage matrices must include Chromium, Firefox and WebKit with smoke

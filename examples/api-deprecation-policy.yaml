@@ -1,0 +1,39 @@
+version: 1
+deprecation:
+  minimumNoticeDays: 90
+  owner: api-platform
+  replacementRequired: true
+  documentationRequired: true
+compatibility:
+  parallelSupportDays: 30
+  breakingChangeApprovalCount: 2
+  rollbackPlanRequired: true
+checks:
+  - name: consumer-inventory
+    required: true
+    owner: service-owner
+    evidence: consumer-report
+  - name: contract-verification
+    required: true
+    owner: qa-automation
+    evidence: contract-report
+  - name: regression
+    required: true
+    owner: qa-lead
+    evidence: regression-report
+communication:
+  channels:
+    - changelog
+    - status-page
+    - owner-notification
+  acknowledgementRequired: true
+  owner: product-manager
+shutdown:
+  usageThresholdPercentMaximum: 1
+  approvalRequired: true
+  monitoringRequired: true
+  owner: release-manager
+reporting:
+  format: json
+  path: reports/api-deprecation.json
+  retentionDays: 90

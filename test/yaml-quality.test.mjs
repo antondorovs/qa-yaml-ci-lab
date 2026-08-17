@@ -57,6 +57,9 @@ test("validates every repository YAML file and registered contracts", async () =
     ),
   );
   assert(
+    result.files.some((file) => file.endsWith("api-deprecation-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("backup-recovery-policy.yaml")),
   );
   assert(result.files.some((file) => file.endsWith("qa-test-plan.yaml")));
@@ -269,6 +272,31 @@ test("rejects accessibility audits without keyboard coverage", async () => {
         (error) =>
           error.includes("accessibility-audit-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects API deprecation without enough notice", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "api-deprecation-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("minimumNoticeDays: 90", "minimumNoticeDays: 30"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("api-deprecation-policy contract") &&
+          error.includes("must be >= 90"),
       ),
     );
   });

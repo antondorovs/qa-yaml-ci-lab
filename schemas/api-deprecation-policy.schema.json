@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/api-deprecation-policy.schema.json",
+  "title": "API deprecation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "deprecation",
+    "compatibility",
+    "checks",
+    "communication",
+    "shutdown",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "deprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumNoticeDays",
+        "owner",
+        "replacementRequired",
+        "documentationRequired"
+      ],
+      "properties": {
+        "minimumNoticeDays": {
+          "type": "integer",
+          "minimum": 90,
+          "maximum": 365
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "replacementRequired": {
+          "const": true
+        },
+        "documentationRequired": {
+          "const": true
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parallelSupportDays",
+        "breakingChangeApprovalCount",
+        "rollbackPlanRequired"
+      ],
+      "properties": {
+        "parallelSupportDays": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 180
+        },
+        "breakingChangeApprovalCount": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5
+        },
+        "rollbackPlanRequired": {
+          "const": true
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "consumer-inventory"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "contract-verification"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "regression"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "communication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channels", "acknowledgementRequired", "owner"],
+      "properties": {
+        "channels": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["changelog", "status-page", "owner-notification"]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "changelog"
+              }
+            },
+            {
+              "contains": {
+                "const": "status-page"
+              }
+            },
+            {
+              "contains": {
+                "const": "owner-notification"
+              }
+            }
+          ]
+        },
+        "acknowledgementRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "shutdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "usageThresholdPercentMaximum",
+        "approvalRequired",
+        "monitoringRequired",
+        "owner"
+      ],
+      "properties": {
+        "usageThresholdPercentMaximum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "approvalRequired": {
+          "const": true
+        },
+        "monitoringRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 180
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["consumer-inventory", "contract-verification", "regression"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": ["consumer-report", "contract-report", "regression-report"]
+        }
+      }
+    }
+  }
+}
