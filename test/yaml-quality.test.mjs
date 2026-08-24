@@ -114,6 +114,9 @@ test("validates every repository YAML file and registered contracts", async () =
   assert(
     result.files.some((file) => file.endsWith("data-migration-policy.yaml")),
   );
+  assert(
+    result.files.some((file) => file.endsWith("database-failover-policy.yaml")),
+  );
   assert(result.files.some((file) => file.endsWith("environment-matrix.yaml")));
   assert(result.files.some((file) => file.endsWith("flaky-test-policy.yaml")));
   assert(
@@ -559,6 +562,31 @@ test("rejects data migrations without a backup", async () => {
       result.errors.some(
         (error) =>
           error.includes("data-migration-policy contract") &&
+          error.includes("must be equal to constant"),
+      ),
+    );
+  });
+});
+
+test("rejects database failover without automatic recovery", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "database-failover-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("automaticRequired: true", "automaticRequired: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("database-failover-policy contract") &&
           error.includes("must be equal to constant"),
       ),
     );

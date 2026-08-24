@@ -22,6 +22,7 @@ Schema contracts to QA-specific examples.
 - configuration change review, staged rollout and drift controls
 - contract test coverage for providers and event schemas
 - data migration preparation, reconciliation and rollback safeguards
+- database failover objectives, topology and recovery drills
 - QA test plan structure and required fields for every named test plan
 - defect triage severity, intake and escalation rules
 - deployment approval rules for staging and production
@@ -112,6 +113,7 @@ npm test
 |-- examples/configuration-change-policy.yaml
 |-- examples/contract-test-policy.yaml
 |-- examples/data-migration-policy.yaml
+|-- examples/database-failover-policy.yaml
 |-- examples/defect-triage-policy.yaml
 |-- examples/deployment-approval-policy.yaml
 |-- examples/deployment-rollback-policy.yaml
@@ -148,6 +150,7 @@ npm test
 |   |-- configuration-change-policy.schema.json
 |   |-- contract-test-policy.schema.json
 |   |-- data-migration-policy.schema.json
+|   |-- database-failover-policy.schema.json
 |   |-- defect-triage-policy.schema.json
 |   |-- deployment-approval-policy.schema.json
 |   |-- deployment-rollback-policy.schema.json
@@ -214,6 +217,8 @@ Contract test policies must require consumer-provider and event-schema coverage
 with published verification before release.
 Data migration policies must require backup and dry-run preparation, phased
 execution, record reconciliation and automatic rollback on failure.
+Database failover policies must define zero-data-loss objectives, redundant
+topology, automatic recovery checks and recurring production-like drills.
 Defect triage policies must keep critical response times tight and require
 reproduction details before escalation.
 Environment matrices must define a `BASE_URL` variable for each supported

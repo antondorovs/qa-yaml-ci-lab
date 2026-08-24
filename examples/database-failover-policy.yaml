@@ -1,0 +1,36 @@
+version: 1
+topology:
+  minimumReplicas: 2
+  synchronousStandbyRequired: true
+  multiZoneRequired: true
+objectives:
+  recoveryTimeSecondsMaximum: 60
+  dataLossSecondsMaximum: 0
+  replicationLagSecondsMaximum: 5
+checks:
+  - name: connectivity
+    required: true
+    owner: database-platform
+    evidence: connectivity-report
+  - name: replication-lag
+    required: true
+    owner: observability-team
+    evidence: replication-report
+  - name: write-read
+    required: true
+    owner: qa-automation
+    evidence: consistency-report
+failover:
+  automaticRequired: true
+  healthCheckSecondsMaximum: 30
+  fencingRequired: true
+  rollbackPlanRequired: true
+validation:
+  drillFrequencyDaysMaximum: 90
+  productionLikeEnvironmentRequired: true
+  approvalCount: 2
+  owner: reliability-team
+reporting:
+  format: json
+  path: reports/database-failover.json
+  retentionDays: 90

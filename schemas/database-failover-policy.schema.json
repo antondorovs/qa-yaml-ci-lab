@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/database-failover-policy.schema.json",
+  "title": "Database failover policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "topology",
+    "objectives",
+    "checks",
+    "failover",
+    "validation",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "topology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumReplicas",
+        "synchronousStandbyRequired",
+        "multiZoneRequired"
+      ],
+      "properties": {
+        "minimumReplicas": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 10
+        },
+        "synchronousStandbyRequired": {
+          "const": true
+        },
+        "multiZoneRequired": {
+          "const": true
+        }
+      }
+    },
+    "objectives": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recoveryTimeSecondsMaximum",
+        "dataLossSecondsMaximum",
+        "replicationLagSecondsMaximum"
+      ],
+      "properties": {
+        "recoveryTimeSecondsMaximum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "dataLossSecondsMaximum": {
+          "const": 0
+        },
+        "replicationLagSecondsMaximum": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/check"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "connectivity"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "replication-lag"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "write-read"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "failover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "automaticRequired",
+        "healthCheckSecondsMaximum",
+        "fencingRequired",
+        "rollbackPlanRequired"
+      ],
+      "properties": {
+        "automaticRequired": {
+          "const": true
+        },
+        "healthCheckSecondsMaximum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "fencingRequired": {
+          "const": true
+        },
+        "rollbackPlanRequired": {
+          "const": true
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "drillFrequencyDaysMaximum",
+        "productionLikeEnvironmentRequired",
+        "approvalCount",
+        "owner"
+      ],
+      "properties": {
+        "drillFrequencyDaysMaximum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 90
+        },
+        "productionLikeEnvironmentRequired": {
+          "const": true
+        },
+        "approvalCount": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 180
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "required", "owner", "evidence"],
+      "properties": {
+        "name": {
+          "enum": ["connectivity", "replication-lag", "write-read"]
+        },
+        "required": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "evidence": {
+          "enum": [
+            "connectivity-report",
+            "replication-report",
+            "consistency-report"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -97,6 +97,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/database-failover-policy.yaml",
+    name: "database-failover-policy",
+    schema: "schemas/database-failover-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/deployment-approval-policy.yaml",
     name: "deployment-approval-policy",
     schema: "schemas/deployment-approval-policy.schema.json",
