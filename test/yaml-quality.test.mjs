@@ -129,6 +129,9 @@ test("validates every repository YAML file and registered contracts", async () =
     result.files.some((file) => file.endsWith("incident-review-policy.yaml")),
   );
   assert(
+    result.files.some((file) => file.endsWith("load-shedding-policy.yaml")),
+  );
+  assert(
     result.files.some((file) =>
       file.endsWith("maintenance-window-policy.yaml"),
     ),
@@ -788,6 +791,31 @@ test("rejects incident reviews without root-cause sections", async () => {
         (error) =>
           error.includes("incident-review-policy contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects load shedding without automatic protection", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "load-shedding-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("automaticRequired: true", "automaticRequired: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("load-shedding-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

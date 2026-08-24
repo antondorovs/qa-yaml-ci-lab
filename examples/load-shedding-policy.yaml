@@ -1,0 +1,34 @@
+version: 1
+triggers:
+  cpuUtilizationPercentMinimum: 85
+  queueDepthMinimum: 1000
+  p95LatencyMillisecondsMinimum: 800
+  errorRatePercentMinimum: 5
+priorities:
+  - name: critical
+    protected: true
+  - name: standard
+    protected: false
+  - name: bulk
+    protected: false
+strategy:
+  mode: progressive
+  automaticRequired: true
+  steps:
+    - priority: bulk
+      shedPercent: 30
+    - priority: standard
+      shedPercent: 10
+recovery:
+  healthyWindowMinutes: 10
+  restorationStepPercent: 25
+  automaticRestorationRequired: true
+controls:
+  retryAfterHeaderRequired: true
+  circuitBreakerRequired: true
+  auditLogRequired: true
+  owner: reliability-team
+reporting:
+  format: json
+  path: reports/load-shedding.json
+  retentionDays: 30

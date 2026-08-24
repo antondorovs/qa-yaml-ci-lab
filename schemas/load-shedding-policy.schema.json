@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/load-shedding-policy.schema.json",
+  "title": "Load shedding policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "triggers",
+    "priorities",
+    "strategy",
+    "recovery",
+    "controls",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "triggers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpuUtilizationPercentMinimum",
+        "queueDepthMinimum",
+        "p95LatencyMillisecondsMinimum",
+        "errorRatePercentMinimum"
+      ],
+      "properties": {
+        "cpuUtilizationPercentMinimum": {
+          "type": "number",
+          "minimum": 70,
+          "maximum": 90
+        },
+        "queueDepthMinimum": {
+          "type": "integer",
+          "minimum": 100
+        },
+        "p95LatencyMillisecondsMinimum": {
+          "type": "integer",
+          "minimum": 100
+        },
+        "errorRatePercentMinimum": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10
+        }
+      }
+    },
+    "priorities": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/priority"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name", "protected"],
+            "properties": {
+              "name": {
+                "const": "critical"
+              },
+              "protected": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "standard"
+              }
+            }
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "const": "bulk"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "automaticRequired", "steps"],
+      "properties": {
+        "mode": {
+          "const": "progressive"
+        },
+        "automaticRequired": {
+          "const": true
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/step"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "required": ["priority"],
+                "properties": {
+                  "priority": {
+                    "const": "bulk"
+                  }
+                }
+              }
+            },
+            {
+              "contains": {
+                "type": "object",
+                "required": ["priority"],
+                "properties": {
+                  "priority": {
+                    "const": "standard"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "healthyWindowMinutes",
+        "restorationStepPercent",
+        "automaticRestorationRequired"
+      ],
+      "properties": {
+        "healthyWindowMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 30
+        },
+        "restorationStepPercent": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 50
+        },
+        "automaticRestorationRequired": {
+          "const": true
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retryAfterHeaderRequired",
+        "circuitBreakerRequired",
+        "auditLogRequired",
+        "owner"
+      ],
+      "properties": {
+        "retryAfterHeaderRequired": {
+          "const": true
+        },
+        "circuitBreakerRequired": {
+          "const": true
+        },
+        "auditLogRequired": {
+          "const": true
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 14,
+          "maximum": 90
+        }
+      }
+    }
+  },
+  "$defs": {
+    "priority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "protected"],
+      "properties": {
+        "name": {
+          "enum": ["critical", "standard", "bulk"]
+        },
+        "protected": {
+          "type": "boolean"
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["priority", "shedPercent"],
+      "properties": {
+        "priority": {
+          "enum": ["bulk", "standard"]
+        },
+        "shedPercent": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    }
+  }
+}
