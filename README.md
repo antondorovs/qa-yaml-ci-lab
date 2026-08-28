@@ -40,6 +40,7 @@ Schema contracts to QA-specific examples.
 - observability alert coverage for release health signals
 - performance budget thresholds for release regressions
 - pipeline stage structure for quality, smoke, regression and reporting
+- post-release monitoring windows, health signals and exit criteria
 - release freeze controls, emergency exceptions and safe resumption
 - release quality thresholds for pass rate, failures and flaky tests
 - release risk assessment across security, performance and data controls
@@ -132,6 +133,7 @@ npm test
 |-- examples/observability-alert-policy.yaml
 |-- examples/performance-budget-policy.yaml
 |-- examples/pipeline-stages.yaml
+|-- examples/post-release-monitoring-policy.yaml
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
 |-- examples/release-freeze-policy.yaml
@@ -173,6 +175,7 @@ npm test
 |   |-- observability-alert-policy.schema.json
 |   |-- performance-budget-policy.schema.json
 |   |-- pipeline-stages.schema.json
+|   |-- post-release-monitoring-policy.schema.json
 |   |-- quality-gate.schema.json
 |   |-- qa-test-plan.schema.json
 |   |-- release-freeze-policy.schema.json
@@ -257,6 +260,9 @@ Performance budgets must keep page-load and interaction metrics within release
 targets and compare regressions against the previous release.
 Pipeline stage examples must include quality, smoke, regression and report
 stages so the lab keeps a complete QA release flow.
+Post-release monitoring policies must compare release health with a baseline,
+retain dashboard, log and trace evidence, and keep automatic rollback active
+until repeated healthy evaluations satisfy the exit criteria.
 The release quality gate requires at least a 95 percent pass rate, smoke and
 regression suites, and critical-severity blocking.
 Release freeze policies must protect branches and deployments, limit exceptions

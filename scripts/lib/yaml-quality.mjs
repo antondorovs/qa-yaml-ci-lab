@@ -181,6 +181,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/post-release-monitoring-policy.yaml",
+    name: "post-release-monitoring-policy",
+    schema: "schemas/post-release-monitoring-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/performance-budget-policy.yaml",
     name: "performance-budget-policy",
     schema: "schemas/performance-budget-policy.schema.json",

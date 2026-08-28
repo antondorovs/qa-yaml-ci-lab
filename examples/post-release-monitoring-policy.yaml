@@ -1,0 +1,28 @@
+version: 1
+window:
+  durationMinutes: 60
+  evaluationIntervalMinutes: 5
+  baselineComparisonRequired: true
+signals:
+  availability:
+    minimumPercent: 99.9
+  latency:
+    p95MillisecondsMaximum: 500
+  errorRate:
+    maximumPercent: 1
+safeguards:
+  automaticRollbackRequired: true
+  alertAcknowledgementMinutes: 5
+  releaseOwner: release-team
+evidence:
+  dashboardsRequired: true
+  logsRequired: true
+  traceSampleRequired: true
+exitCriteria:
+  consecutiveHealthyEvaluations: 6
+  incidentFreeRequired: true
+  approvalRequired: true
+reporting:
+  format: json
+  path: reports/post-release-monitoring.json
+  retentionDays: 30

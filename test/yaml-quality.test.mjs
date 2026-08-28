@@ -150,6 +150,11 @@ test("validates every repository YAML file and registered contracts", async () =
     ),
   );
   assert(result.files.some((file) => file.endsWith("pipeline-stages.yaml")));
+  assert(
+    result.files.some((file) =>
+      file.endsWith("post-release-monitoring-policy.yaml"),
+    ),
+  );
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(
     result.files.some((file) => file.endsWith("release-freeze-policy.yaml")),
@@ -968,6 +973,34 @@ test("rejects pipeline stages without a report stage", async () => {
         (error) =>
           error.includes("pipeline-stages contract") &&
           error.includes("must contain at least 1 valid item"),
+      ),
+    );
+  });
+});
+
+test("rejects post-release monitoring without automatic rollback", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "post-release-monitoring-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "automaticRollbackRequired: true",
+        "automaticRollbackRequired: false",
+      ),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("post-release-monitoring-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

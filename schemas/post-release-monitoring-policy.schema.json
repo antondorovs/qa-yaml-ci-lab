@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/post-release-monitoring-policy.schema.json",
+  "title": "Post-release monitoring policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "window",
+    "signals",
+    "safeguards",
+    "evidence",
+    "exitCriteria",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "durationMinutes",
+        "evaluationIntervalMinutes",
+        "baselineComparisonRequired"
+      ],
+      "properties": {
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 240
+        },
+        "evaluationIntervalMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "baselineComparisonRequired": {
+          "const": true
+        }
+      }
+    },
+    "signals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "latency", "errorRate"],
+      "properties": {
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimumPercent"],
+          "properties": {
+            "minimumPercent": {
+              "type": "number",
+              "minimum": 99,
+              "maximum": 100
+            }
+          }
+        },
+        "latency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["p95MillisecondsMaximum"],
+          "properties": {
+            "p95MillisecondsMaximum": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            }
+          }
+        },
+        "errorRate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["maximumPercent"],
+          "properties": {
+            "maximumPercent": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            }
+          }
+        }
+      }
+    },
+    "safeguards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "automaticRollbackRequired",
+        "alertAcknowledgementMinutes",
+        "releaseOwner"
+      ],
+      "properties": {
+        "automaticRollbackRequired": {
+          "const": true
+        },
+        "alertAcknowledgementMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 15
+        },
+        "releaseOwner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dashboardsRequired", "logsRequired", "traceSampleRequired"],
+      "properties": {
+        "dashboardsRequired": {
+          "const": true
+        },
+        "logsRequired": {
+          "const": true
+        },
+        "traceSampleRequired": {
+          "const": true
+        }
+      }
+    },
+    "exitCriteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consecutiveHealthyEvaluations",
+        "incidentFreeRequired",
+        "approvalRequired"
+      ],
+      "properties": {
+        "consecutiveHealthyEvaluations": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 12
+        },
+        "incidentFreeRequired": {
+          "const": true
+        },
+        "approvalRequired": {
+          "const": true
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 14,
+          "maximum": 90
+        }
+      }
+    }
+  }
+}
