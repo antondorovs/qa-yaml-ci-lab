@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/rollback-readiness-policy.schema.json",
+  "title": "Rollback readiness policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "release",
+    "artifacts",
+    "data",
+    "execution",
+    "verification",
+    "approval",
+    "reporting"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate", "previousStable", "rollbackTargetPinned"],
+      "properties": {
+        "candidate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "previousStable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rollbackTargetPinned": {
+          "const": true
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "previousImageAvailable",
+        "configurationSnapshotAvailable",
+        "integrityVerified"
+      ],
+      "properties": {
+        "previousImageAvailable": {
+          "const": true
+        },
+        "configurationSnapshotAvailable": {
+          "const": true
+        },
+        "integrityVerified": {
+          "const": true
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compatibility",
+        "backupRequired",
+        "restorePointVerified",
+        "destructiveMigrationsAllowed"
+      ],
+      "properties": {
+        "compatibility": {
+          "enum": ["backward", "bidirectional"]
+        },
+        "backupRequired": {
+          "const": true
+        },
+        "restorePointVerified": {
+          "const": true
+        },
+        "destructiveMigrationsAllowed": {
+          "const": false
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runbook",
+        "rollbackCommandVerified",
+        "maximumMinutes",
+        "automaticTriggersEnabled"
+      ],
+      "properties": {
+        "runbook": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*\\.md$"
+        },
+        "rollbackCommandVerified": {
+          "const": true
+        },
+        "maximumMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "automaticTriggersEnabled": {
+          "const": true
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["smoke", "health", "regression"]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "smoke"
+          }
+        },
+        {
+          "contains": {
+            "const": "health"
+          }
+        },
+        {
+          "contains": {
+            "const": "regression"
+          }
+        }
+      ]
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "approversRequired", "evidenceRequired"],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "approversRequired": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "evidenceRequired": {
+          "const": true
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": {
+          "const": "json"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 14,
+          "maximum": 90
+        }
+      }
+    }
+  }
+}

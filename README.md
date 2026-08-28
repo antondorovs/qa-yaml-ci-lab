@@ -43,6 +43,7 @@ Schema contracts to QA-specific examples.
 - release freeze controls, emergency exceptions and safe resumption
 - release quality thresholds for pass rate, failures and flaky tests
 - release risk assessment across security, performance and data controls
+- rollback readiness for artifacts, data, execution and verification
 - security scan coverage for static analysis, dependencies and secrets
 - service level objectives for release readiness
 - test data retention and masking rules
@@ -135,6 +136,7 @@ npm test
 |-- examples/qa-test-plan.yaml
 |-- examples/release-freeze-policy.yaml
 |-- examples/release-risk-assessment-policy.yaml
+|-- examples/rollback-readiness-policy.yaml
 |-- examples/security-scan-policy.yaml
 |-- examples/service-level-objective-policy.yaml
 |-- examples/test-data-retention-policy.yaml
@@ -175,6 +177,7 @@ npm test
 |   |-- qa-test-plan.schema.json
 |   |-- release-freeze-policy.schema.json
 |   |-- release-risk-assessment-policy.schema.json
+|   |-- rollback-readiness-policy.schema.json
 |   |-- security-scan-policy.schema.json
 |   |-- service-level-objective-policy.schema.json
 |   |-- test-data-retention-policy.schema.json
@@ -261,6 +264,9 @@ to approved critical hotfixes and require smoke and observability checks before
 normal releases resume.
 Release risk assessments must keep each release dimension inside the accepted
 risk score and require evidence before approval.
+Rollback readiness policies must pin the previous stable target, preserve
+verified artifacts and data recovery, and require smoke, health and regression
+evidence within a bounded execution window.
 Security scan policies must require static analysis, dependency auditing and
 secret scanning before release artifacts are accepted.
 Service level objective policies must keep availability, latency and error-rate

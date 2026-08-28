@@ -160,6 +160,11 @@ test("validates every repository YAML file and registered contracts", async () =
     ),
   );
   assert(
+    result.files.some((file) =>
+      file.endsWith("rollback-readiness-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("security-scan-policy.yaml")),
   );
   assert(
@@ -815,6 +820,34 @@ test("rejects load shedding without automatic protection", async () => {
       result.errors.some(
         (error) =>
           error.includes("load-shedding-policy contract") &&
+          error.includes("must be equal to constant"),
+      ),
+    );
+  });
+});
+
+test("rejects rollback readiness without a verified command", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "rollback-readiness-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "rollbackCommandVerified: true",
+        "rollbackCommandVerified: false",
+      ),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("rollback-readiness-policy contract") &&
           error.includes("must be equal to constant"),
       ),
     );

@@ -205,6 +205,12 @@ const contractDefinitions = [
   },
   {
     matches: (repositoryPath) =>
+      repositoryPath === "examples/rollback-readiness-policy.yaml",
+    name: "rollback-readiness-policy",
+    schema: "schemas/rollback-readiness-policy.schema.json",
+  },
+  {
+    matches: (repositoryPath) =>
       repositoryPath === "examples/security-scan-policy.yaml",
     name: "security-scan-policy",
     schema: "schemas/security-scan-policy.schema.json",

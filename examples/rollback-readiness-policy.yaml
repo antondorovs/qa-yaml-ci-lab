@@ -1,0 +1,31 @@
+version: 1
+release:
+  candidate: checkout-service-2026.08.28
+  previousStable: checkout-service-2026.08.21
+  rollbackTargetPinned: true
+artifacts:
+  previousImageAvailable: true
+  configurationSnapshotAvailable: true
+  integrityVerified: true
+data:
+  compatibility: backward
+  backupRequired: true
+  restorePointVerified: true
+  destructiveMigrationsAllowed: false
+execution:
+  runbook: docs/runbooks/checkout-rollback.md
+  rollbackCommandVerified: true
+  maximumMinutes: 15
+  automaticTriggersEnabled: true
+verification:
+  - smoke
+  - health
+  - regression
+approval:
+  owner: release-team
+  approversRequired: 2
+  evidenceRequired: true
+reporting:
+  format: json
+  path: reports/rollback-readiness.json
+  retentionDays: 30
