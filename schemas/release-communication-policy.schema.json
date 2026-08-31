@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/release-communication-policy.schema.json",
+  "title": "Release communication policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "audiences",
+    "content",
+    "delivery",
+    "followUp",
+    "reporting"
+  ],
+  "properties": {
+    "version": { "const": 1 },
+    "audiences": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": { "enum": ["internal", "customers"] },
+      "allOf": [
+        { "contains": { "const": "internal" } },
+        { "contains": { "const": "customers" } }
+      ]
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "changeSummaryRequired",
+        "knownRiskRequired",
+        "rollbackGuidanceRequired",
+        "owner"
+      ],
+      "properties": {
+        "changeSummaryRequired": { "const": true },
+        "knownRiskRequired": { "const": true },
+        "rollbackGuidanceRequired": { "const": true },
+        "owner": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channels",
+        "preReleaseNoticeMinutes",
+        "postReleaseConfirmationRequired"
+      ],
+      "properties": {
+        "channels": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "enum": ["status-page", "email"] },
+          "allOf": [
+            { "contains": { "const": "status-page" } },
+            { "contains": { "const": "email" } }
+          ]
+        },
+        "preReleaseNoticeMinutes": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 1440
+        },
+        "postReleaseConfirmationRequired": { "const": true }
+      }
+    },
+    "followUp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stakeholderAcknowledgementRequired",
+        "incidentUpdateCadenceMinutes"
+      ],
+      "properties": {
+        "stakeholderAcknowledgementRequired": { "const": true },
+        "incidentUpdateCadenceMinutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": { "const": "json" },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": { "type": "integer", "minimum": 14, "maximum": 90 }
+      }
+    }
+  }
+}

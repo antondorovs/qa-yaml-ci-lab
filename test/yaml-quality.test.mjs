@@ -157,6 +157,11 @@ test("validates every repository YAML file and registered contracts", async () =
   );
   assert(result.files.some((file) => file.endsWith("quality-gate.yaml")));
   assert(
+    result.files.some((file) =>
+      file.endsWith("release-communication-policy.yaml"),
+    ),
+  );
+  assert(
     result.files.some((file) => file.endsWith("release-freeze-policy.yaml")),
   );
   assert(
@@ -1022,6 +1027,32 @@ test("rejects a release gate with a low pass rate", async () => {
         (error) =>
           error.includes("quality-gate contract") &&
           error.includes("must be >= 95"),
+      ),
+    );
+  });
+});
+
+test("rejects release communication without rollback guidance", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "release-communication-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace(
+        "rollbackGuidanceRequired: true",
+        "rollbackGuidanceRequired: false",
+      ),
+    );
+    const result = await validateRepository(fixtureRoot);
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("release-communication-policy contract") &&
+          error.includes("must be equal to constant"),
       ),
     );
   });

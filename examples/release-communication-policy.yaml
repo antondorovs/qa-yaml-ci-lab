@@ -1,0 +1,22 @@
+version: 1
+audiences:
+  - internal
+  - customers
+content:
+  changeSummaryRequired: true
+  knownRiskRequired: true
+  rollbackGuidanceRequired: true
+  owner: release-communications
+delivery:
+  channels:
+    - status-page
+    - email
+  preReleaseNoticeMinutes: 60
+  postReleaseConfirmationRequired: true
+followUp:
+  stakeholderAcknowledgementRequired: true
+  incidentUpdateCadenceMinutes: 30
+reporting:
+  format: json
+  path: reports/release-communication.json
+  retentionDays: 30

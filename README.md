@@ -42,6 +42,7 @@ Schema contracts to QA-specific examples.
 - pipeline stage structure for quality, smoke, regression and reporting
 - post-release monitoring windows, health signals and exit criteria
 - release freeze controls, emergency exceptions and safe resumption
+- release communication for audiences, risks and rollback guidance
 - release quality thresholds for pass rate, failures and flaky tests
 - release risk assessment across security, performance and data controls
 - rollback readiness for artifacts, data, execution and verification
@@ -137,6 +138,7 @@ npm test
 |-- examples/quality-gate.yaml
 |-- examples/qa-test-plan.yaml
 |-- examples/release-freeze-policy.yaml
+|-- examples/release-communication-policy.yaml
 |-- examples/release-risk-assessment-policy.yaml
 |-- examples/rollback-readiness-policy.yaml
 |-- examples/security-scan-policy.yaml
@@ -179,6 +181,7 @@ npm test
 |   |-- quality-gate.schema.json
 |   |-- qa-test-plan.schema.json
 |   |-- release-freeze-policy.schema.json
+|   |-- release-communication-policy.schema.json
 |   |-- release-risk-assessment-policy.schema.json
 |   |-- rollback-readiness-policy.schema.json
 |   |-- security-scan-policy.schema.json
@@ -268,6 +271,8 @@ regression suites, and critical-severity blocking.
 Release freeze policies must protect branches and deployments, limit exceptions
 to approved critical hotfixes and require smoke and observability checks before
 normal releases resume.
+Release communication policies must notify internal and customer audiences with
+change, risk and rollback information before release confirmation.
 Release risk assessments must keep each release dimension inside the accepted
 risk score and require evidence before approval.
 Rollback readiness policies must pin the previous stable target, preserve
