@@ -352,6 +352,11 @@ export async function validateRepository(root = projectRoot) {
       continue;
     }
 
+    if (document.toJS() === null) {
+      errors.push(`${repositoryPath}: YAML document must not be empty`);
+      continue;
+    }
+
     const contract = [...contracts.entries()].find(([matches]) =>
       matches(repositoryPath),
     )?.[1];

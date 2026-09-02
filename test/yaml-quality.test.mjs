@@ -242,6 +242,18 @@ test("rejects duplicate mapping keys", async () => {
   });
 });
 
+test("rejects empty YAML documents", async () => {
+  await withFixture(async (fixtureRoot) => {
+    await writeFile(path.join(fixtureRoot, "empty.yaml"), "---\n");
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.includes("empty.yaml: YAML document must not be empty"),
+    );
+  });
+});
+
 test("rejects example files without a registered contract", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(
