@@ -1,0 +1,17 @@
+version: 1
+evidence:
+  qualityGatePassed: true
+  securityScanPassed: true
+  rollbackApproved: true
+approvals:
+  required: 2
+  roles:
+    - qa-lead
+    - release-manager
+execution:
+  changeWindowRequired: true
+  owner: release-manager
+reporting:
+  format: json
+  path: reports/release-decision.json
+  retentionDays: 30

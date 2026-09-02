@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/schemas/release-decision-policy.schema.json",
+  "title": "Release decision policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "evidence", "approvals", "execution", "reporting"],
+  "properties": {
+    "version": { "const": 1 },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualityGatePassed",
+        "securityScanPassed",
+        "rollbackApproved"
+      ],
+      "properties": {
+        "qualityGatePassed": { "const": true },
+        "securityScanPassed": { "const": true },
+        "rollbackApproved": { "const": true }
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "roles"],
+      "properties": {
+        "required": { "const": 2 },
+        "roles": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "enum": ["qa-lead", "release-manager"] },
+          "allOf": [
+            { "contains": { "const": "qa-lead" } },
+            { "contains": { "const": "release-manager" } }
+          ]
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["changeWindowRequired", "owner"],
+      "properties": {
+        "changeWindowRequired": { "const": true },
+        "owner": { "const": "release-manager" }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "path", "retentionDays"],
+      "properties": {
+        "format": { "const": "json" },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*\\.\\.)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$"
+        },
+        "retentionDays": { "type": "integer", "minimum": 14, "maximum": 90 }
+      }
+    }
+  }
+}

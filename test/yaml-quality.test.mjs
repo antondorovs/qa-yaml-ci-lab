@@ -162,6 +162,9 @@ test("validates every repository YAML file and registered contracts", async () =
     ),
   );
   assert(
+    result.files.some((file) => file.endsWith("release-decision-policy.yaml")),
+  );
+  assert(
     result.files.some((file) => file.endsWith("release-freeze-policy.yaml")),
   );
   assert(
@@ -1052,6 +1055,31 @@ test("rejects release communication without rollback guidance", async () => {
       result.errors.some(
         (error) =>
           error.includes("release-communication-policy contract") &&
+          error.includes("must be equal to constant"),
+      ),
+    );
+  });
+});
+
+test("rejects release decisions without a rollback approval", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(
+      fixtureRoot,
+      "examples",
+      "release-decision-policy.yaml",
+    );
+    const source = await readFile(policyPath, "utf8");
+    await writeFile(
+      policyPath,
+      source.replace("rollbackApproved: true", "rollbackApproved: false"),
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.includes("release-decision-policy contract") &&
           error.includes("must be equal to constant"),
       ),
     );
