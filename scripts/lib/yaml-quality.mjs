@@ -356,6 +356,11 @@ export async function validateRepository(root = projectRoot) {
       matches(repositoryPath),
     )?.[1];
 
+    if (repositoryPath.startsWith("examples/") && !contract) {
+      errors.push(`${repositoryPath}: no contract is registered`);
+      continue;
+    }
+
     if (contract && !contract.validate(document.toJS())) {
       errors.push(
         ...contract.validate.errors.map((error) =>

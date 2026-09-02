@@ -242,6 +242,23 @@ test("rejects duplicate mapping keys", async () => {
   });
 });
 
+test("rejects example files without a registered contract", async () => {
+  await withFixture(async (fixtureRoot) => {
+    await writeFile(
+      path.join(fixtureRoot, "examples", "unregistered-policy.yaml"),
+      "version: 1\n",
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.includes(
+        "examples/unregistered-policy.yaml: no contract is registered",
+      ),
+    );
+  });
+});
+
 test("rejects a QA test plan that violates its contract", async () => {
   await withFixture(async (fixtureRoot) => {
     const testPlanPath = path.join(

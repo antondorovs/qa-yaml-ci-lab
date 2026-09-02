@@ -11,6 +11,7 @@ Schema contracts to QA-specific examples.
 
 - YAML syntax across the repository
 - duplicate mapping keys
+- registered JSON Schema contracts for every file under `examples/`
 - formatting with Prettier
 - accessibility audit coverage for critical release checks
 - API deprecation notice, compatibility and shutdown safeguards
