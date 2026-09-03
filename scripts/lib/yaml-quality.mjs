@@ -352,8 +352,15 @@ export async function validateRepository(root = projectRoot) {
       continue;
     }
 
-    if (document.toJS() === null) {
+    const value = document.toJS();
+
+    if (value === null) {
       errors.push(`${repositoryPath}: YAML document must not be empty`);
+      continue;
+    }
+
+    if (typeof value !== "object" || Array.isArray(value)) {
+      errors.push(`${repositoryPath}: YAML document root must be an object`);
       continue;
     }
 
@@ -366,7 +373,7 @@ export async function validateRepository(root = projectRoot) {
       continue;
     }
 
-    if (contract && !contract.validate(document.toJS())) {
+    if (contract && !contract.validate(value)) {
       errors.push(
         ...contract.validate.errors.map((error) =>
           formatSchemaError(repositoryPath, contract.name, error),

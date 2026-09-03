@@ -254,6 +254,20 @@ test("rejects empty YAML documents", async () => {
   });
 });
 
+test("rejects YAML documents whose root is not an object", async () => {
+  await withFixture(async (fixtureRoot) => {
+    await writeFile(path.join(fixtureRoot, "scalar.yaml"), "smoke\n");
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.includes(
+        "scalar.yaml: YAML document root must be an object",
+      ),
+    );
+  });
+});
+
 test("rejects example files without a registered contract", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(
