@@ -242,6 +242,26 @@ test("rejects duplicate mapping keys", async () => {
   });
 });
 
+test("reports excessive YAML aliases without crashing validation", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const aliases = Array.from({ length: 101 }, () => "  - *value").join("\n");
+    await writeFile(
+      path.join(fixtureRoot, "excessive-aliases.yaml"),
+      `anchor: &value [one, two]\naliases:\n${aliases}\n`,
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.startsWith("excessive-aliases.yaml:") &&
+          error.includes("Excessive alias count"),
+      ),
+    );
+  });
+});
+
 test("rejects empty YAML documents", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(path.join(fixtureRoot, "empty.yaml"), "---\n");

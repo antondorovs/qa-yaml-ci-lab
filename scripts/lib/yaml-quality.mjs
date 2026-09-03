@@ -352,7 +352,14 @@ export async function validateRepository(root = projectRoot) {
       continue;
     }
 
-    const value = document.toJS();
+    let value;
+
+    try {
+      value = document.toJS();
+    } catch (error) {
+      errors.push(`${repositoryPath}: ${error.message}`);
+      continue;
+    }
 
     if (value === null) {
       errors.push(`${repositoryPath}: YAML document must not be empty`);
