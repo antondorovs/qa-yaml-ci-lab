@@ -355,7 +355,7 @@ export async function validateRepository(root = projectRoot) {
     let value;
 
     try {
-      value = document.toJS();
+      value = document.toJS({ maxAliasCount: 50 });
     } catch (error) {
       errors.push(`${repositoryPath}: ${error.message}`);
       continue;
