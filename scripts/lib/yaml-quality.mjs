@@ -343,11 +343,11 @@ export async function validateRepository(root = projectRoot) {
       uniqueKeys: true,
     });
 
-    if (document.errors.length > 0) {
+    const parsingIssues = [...document.errors, ...document.warnings];
+
+    if (parsingIssues.length > 0) {
       errors.push(
-        ...document.errors.map((error) =>
-          formatYamlError(repositoryPath, error),
-        ),
+        ...parsingIssues.map((error) => formatYamlError(repositoryPath, error)),
       );
       continue;
     }

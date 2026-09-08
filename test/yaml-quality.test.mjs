@@ -242,6 +242,25 @@ test("rejects duplicate mapping keys", async () => {
   });
 });
 
+test("rejects unresolved YAML tags", async () => {
+  await withFixture(async (fixtureRoot) => {
+    await writeFile(
+      path.join(fixtureRoot, "custom-tag.yaml"),
+      "suite: !custom smoke\n",
+    );
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some(
+        (error) =>
+          error.startsWith("custom-tag.yaml:") &&
+          error.includes("Unresolved tag: !custom"),
+      ),
+    );
+  });
+});
+
 test("reports excessive YAML aliases without crashing validation", async () => {
   await withFixture(async (fixtureRoot) => {
     const aliases = Array.from({ length: 51 }, () => "  - *value").join("\n");
