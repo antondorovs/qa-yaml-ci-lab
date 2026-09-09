@@ -203,6 +203,7 @@ test("creates a portable validation report", async () => {
   assert.equal(report.status, "passed");
   assert.deepEqual(report.summary, {
     filesChecked: result.files.length,
+    filesPassed: result.files.length,
     errors: 0,
     filesWithErrors: 0,
   });
@@ -223,6 +224,7 @@ test("lists the files that produced validation errors in the report", async () =
     const report = createValidationReport(result, fixtureRoot);
 
     assert.equal(report.summary.filesWithErrors, 1);
+    assert.equal(report.summary.filesPassed, result.files.length - 1);
     assert.deepEqual(report.errorFiles, ["broken.yaml"]);
   });
 });

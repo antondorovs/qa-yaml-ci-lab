@@ -300,9 +300,10 @@ The regression CronJob uses `concurrencyPolicy: Forbid` so a delayed nightly
 run cannot overlap with the next schedule.
 
 GitHub Actions and GitLab CI retain `reports/yaml-quality.json` for 14 days.
-The report includes the result status, checked repository paths and validation
-errors without machine-specific absolute paths. It also lists affected files so
-CI output can identify the scope of a failed validation quickly.
+The report includes the result status, checked and passed file counts, repository
+paths and validation errors without machine-specific absolute paths. It also
+lists affected files so CI output can identify the scope of a failed validation
+quickly.
 
 The GitHub workflow runs the Docker quality image automatically. The GitLab
 pipeline includes the same Docker check as a manual job for runners configured

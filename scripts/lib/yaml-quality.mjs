@@ -326,6 +326,7 @@ export function createValidationReport(result, root = projectRoot) {
     status: result.errors.length === 0 ? "passed" : "failed",
     summary: {
       filesChecked: result.files.length,
+      filesPassed: result.files.length - errorFiles.length,
       errors: result.errors.length,
       filesWithErrors: errorFiles.length,
     },
