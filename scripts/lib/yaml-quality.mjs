@@ -317,15 +317,21 @@ function formatSchemaError(file, contractName, error) {
 }
 
 export function createValidationReport(result, root = projectRoot) {
+  const errorFiles = [
+    ...new Set(result.errors.map((error) => error.split(":", 1)[0])),
+  ].sort();
+
   return {
     version: 1,
     status: result.errors.length === 0 ? "passed" : "failed",
     summary: {
       filesChecked: result.files.length,
       errors: result.errors.length,
+      filesWithErrors: errorFiles.length,
     },
     files: result.files.map((file) => toRepositoryPath(root, file)),
     errors: result.errors,
+    errorFiles,
   };
 }
 

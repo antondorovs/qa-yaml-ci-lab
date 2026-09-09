@@ -204,10 +204,27 @@ test("creates a portable validation report", async () => {
   assert.deepEqual(report.summary, {
     filesChecked: result.files.length,
     errors: 0,
+    filesWithErrors: 0,
   });
   assert(report.files.includes("examples/api-regression-test-plan.yaml"));
   assert(report.files.every((file) => !path.isAbsolute(file)));
   assert.deepEqual(report.errors, []);
+  assert.deepEqual(report.errorFiles, []);
+});
+
+test("lists the files that produced validation errors in the report", async () => {
+  await withFixture(async (fixtureRoot) => {
+    await writeFile(
+      path.join(fixtureRoot, "broken.yaml"),
+      "suite: smoke\n  invalid: indentation\n",
+    );
+
+    const result = await validateRepository(fixtureRoot);
+    const report = createValidationReport(result, fixtureRoot);
+
+    assert.equal(report.summary.filesWithErrors, 1);
+    assert.deepEqual(report.errorFiles, ["broken.yaml"]);
+  });
 });
 
 test("reports YAML syntax errors with the repository path", async () => {
