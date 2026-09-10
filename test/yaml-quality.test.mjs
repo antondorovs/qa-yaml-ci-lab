@@ -248,6 +248,22 @@ test("reports YAML syntax errors with the repository path", async () => {
   });
 });
 
+test("counts malformed registered YAML in contract coverage", async () => {
+  await withFixture(async (fixtureRoot) => {
+    const policyPath = path.join(fixtureRoot, "examples", "quality-gate.yaml");
+    await writeFile(policyPath, "name: release\n  invalid: indentation\n");
+
+    const result = await validateRepository(fixtureRoot);
+
+    assert(
+      result.errors.some((error) =>
+        error.startsWith("examples/quality-gate.yaml:"),
+      ),
+    );
+    assert(result.contractFiles.includes("examples/quality-gate.yaml"));
+  });
+});
+
 test("rejects duplicate mapping keys", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(

@@ -345,6 +345,14 @@ export async function validateRepository(root = projectRoot) {
 
   for (const filePath of files) {
     const repositoryPath = toRepositoryPath(root, filePath);
+    const contract = [...contracts.entries()].find(([matches]) =>
+      matches(repositoryPath),
+    )?.[1];
+
+    if (contract) {
+      contractFiles.push(repositoryPath);
+    }
+
     const source = await readFile(filePath, "utf8");
     const document = parseDocument(source, {
       prettyErrors: false,
@@ -378,14 +386,6 @@ export async function validateRepository(root = projectRoot) {
     if (typeof value !== "object" || Array.isArray(value)) {
       errors.push(`${repositoryPath}: YAML document root must be an object`);
       continue;
-    }
-
-    const contract = [...contracts.entries()].find(([matches]) =>
-      matches(repositoryPath),
-    )?.[1];
-
-    if (contract) {
-      contractFiles.push(repositoryPath);
     }
 
     if (repositoryPath.startsWith("examples/") && !contract) {
