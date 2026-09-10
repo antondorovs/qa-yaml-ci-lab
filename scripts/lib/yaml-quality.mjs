@@ -329,6 +329,7 @@ export function createValidationReport(result, root = projectRoot) {
       filesPassed: result.files.length - errorFiles.length,
       errors: result.errors.length,
       filesWithErrors: errorFiles.length,
+      contractFilesChecked: result.contractFiles.length,
     },
     files: result.files.map((file) => toRepositoryPath(root, file)),
     errors: result.errors,
@@ -340,6 +341,7 @@ export async function validateRepository(root = projectRoot) {
   const files = await collectYamlFiles(root);
   const contracts = await loadContracts(root);
   const errors = [];
+  const contractFiles = [];
 
   for (const filePath of files) {
     const repositoryPath = toRepositoryPath(root, filePath);
@@ -382,6 +384,10 @@ export async function validateRepository(root = projectRoot) {
       matches(repositoryPath),
     )?.[1];
 
+    if (contract) {
+      contractFiles.push(repositoryPath);
+    }
+
     if (repositoryPath.startsWith("examples/") && !contract) {
       errors.push(`${repositoryPath}: no contract is registered`);
       continue;
@@ -396,5 +402,5 @@ export async function validateRepository(root = projectRoot) {
     }
   }
 
-  return { errors, files };
+  return { errors, files, contractFiles };
 }
