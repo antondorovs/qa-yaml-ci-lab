@@ -209,6 +209,7 @@ test("creates a portable validation report", async () => {
     contractFilesChecked: result.contractFiles.length,
   });
   assert(result.contractFiles.includes("examples/quality-gate.yaml"));
+  assert.deepEqual(report.contractFiles, result.contractFiles);
   assert(report.files.includes("examples/api-regression-test-plan.yaml"));
   assert(report.files.every((file) => !path.isAbsolute(file)));
   assert.deepEqual(report.errors, []);
@@ -232,6 +233,7 @@ test("lists the files that produced validation errors in the report", async () =
       result.contractFiles.length,
     );
     assert.deepEqual(report.errorFiles, ["broken.yaml"]);
+    assert.deepEqual(report.contractFiles, result.contractFiles);
   });
 });
 

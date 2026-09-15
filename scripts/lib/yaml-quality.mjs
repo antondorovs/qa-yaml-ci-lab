@@ -332,6 +332,7 @@ export function createValidationReport(result, root = projectRoot) {
       contractFilesChecked: result.contractFiles.length,
     },
     files: result.files.map((file) => toRepositoryPath(root, file)),
+    contractFiles: result.contractFiles,
     errors: result.errors,
     errorFiles,
   };
