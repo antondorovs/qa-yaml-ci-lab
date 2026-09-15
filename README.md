@@ -303,7 +303,8 @@ GitHub Actions and GitLab CI retain `reports/yaml-quality.json` for 14 days.
 The report includes the result status, checked, passed and contract-covered file
 counts, the contract-covered and affected file lists, repository paths and
 validation errors without machine-specific absolute paths. This lets CI output
-identify both validation coverage and the scope of a failed check quickly.
+identify both validation coverage and the scope of a failed check quickly. File
+lists are sorted to keep generated artifacts reproducible.
 
 The GitHub workflow runs the Docker quality image automatically. The GitLab
 pipeline includes the same Docker check as a manual job for runners configured

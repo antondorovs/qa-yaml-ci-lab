@@ -320,6 +320,7 @@ export function createValidationReport(result, root = projectRoot) {
   const errorFiles = [
     ...new Set(result.errors.map((error) => error.split(":", 1)[0])),
   ].sort();
+  const contractFiles = [...result.contractFiles].sort();
 
   return {
     version: 1,
@@ -329,10 +330,10 @@ export function createValidationReport(result, root = projectRoot) {
       filesPassed: result.files.length - errorFiles.length,
       errors: result.errors.length,
       filesWithErrors: errorFiles.length,
-      contractFilesChecked: result.contractFiles.length,
+      contractFilesChecked: contractFiles.length,
     },
     files: result.files.map((file) => toRepositoryPath(root, file)),
-    contractFiles: result.contractFiles,
+    contractFiles,
     errors: result.errors,
     errorFiles,
   };

@@ -237,6 +237,22 @@ test("lists the files that produced validation errors in the report", async () =
   });
 });
 
+test("sorts contract-covered files in validation reports", () => {
+  const report = createValidationReport(
+    {
+      files: [],
+      errors: [],
+      contractFiles: ["examples/z-policy.yaml", "examples/a-policy.yaml"],
+    },
+    projectRoot,
+  );
+
+  assert.deepEqual(report.contractFiles, [
+    "examples/a-policy.yaml",
+    "examples/z-policy.yaml",
+  ]);
+});
+
 test("reports YAML syntax errors with the repository path", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(
