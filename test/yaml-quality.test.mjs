@@ -271,6 +271,19 @@ test("prints contract coverage in the validation CLI summary", async () => {
   );
 });
 
+test("rejects unknown validation CLI options", async () => {
+  await assert.rejects(
+    execFileAsync(process.execPath, [
+      path.join(projectRoot, "scripts", "validate-yaml.mjs"),
+      "--reports",
+    ]),
+    (error) => {
+      assert.match(error.stderr, /Unknown option: --reports/);
+      return true;
+    },
+  );
+});
+
 test("reports YAML syntax errors with the repository path", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(

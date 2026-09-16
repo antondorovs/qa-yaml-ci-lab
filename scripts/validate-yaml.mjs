@@ -9,23 +9,31 @@ import {
 } from "./lib/yaml-quality.mjs";
 
 function readReportPath(arguments_) {
-  const reportOption = arguments_.indexOf("--report");
-
-  if (reportOption === -1) {
+  if (arguments_.length === 0) {
     return null;
   }
 
-  const reportPath = arguments_[reportOption + 1];
+  if (arguments_[0] !== "--report") {
+    throw new Error(`Unknown option: ${arguments_[0]}`);
+  }
+
+  const reportPath = arguments_[1];
 
   if (!reportPath || reportPath.startsWith("--")) {
     throw new Error("--report requires a file path");
   }
 
+  const extraArgument = arguments_[2];
+
+  if (extraArgument) {
+    throw new Error(`Unexpected argument: ${extraArgument}`);
+  }
+
   return path.resolve(reportPath);
 }
 
-const result = await validateRepository();
 const reportPath = readReportPath(process.argv.slice(2));
+const result = await validateRepository();
 
 if (reportPath) {
   await mkdir(path.dirname(reportPath), { recursive: true });
