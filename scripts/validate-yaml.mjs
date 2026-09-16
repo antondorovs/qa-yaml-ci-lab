@@ -45,5 +45,7 @@ if (result.errors.length > 0) {
 
   process.exitCode = 1;
 } else {
-  console.log(`YAML quality gate passed for ${result.files.length} files.`);
+  console.log(
+    `YAML quality gate passed for ${result.files.length} files; ${result.contractFiles.length} contract-covered files checked.`,
+  );
 }

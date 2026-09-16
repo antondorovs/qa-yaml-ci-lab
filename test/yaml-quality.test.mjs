@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import {
@@ -12,6 +14,7 @@ import {
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(testDirectory, "..");
+const execFileAsync = promisify(execFile);
 
 async function createFixtureRepository() {
   const fixtureRoot = await mkdtemp(path.join(tmpdir(), "qa-yaml-ci-lab-"));
@@ -251,6 +254,21 @@ test("sorts contract-covered files in validation reports", () => {
     "examples/a-policy.yaml",
     "examples/z-policy.yaml",
   ]);
+});
+
+test("prints contract coverage in the validation CLI summary", async () => {
+  const { stdout } = await execFileAsync(process.execPath, [
+    path.join(projectRoot, "scripts", "validate-yaml.mjs"),
+  ]);
+
+  const result = await validateRepository(projectRoot);
+
+  assert.match(
+    stdout,
+    new RegExp(
+      `YAML quality gate passed for ${result.files.length} files; ${result.contractFiles.length} contract-covered files checked\\.`,
+    ),
+  );
 });
 
 test("reports YAML syntax errors with the repository path", async () => {
