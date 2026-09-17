@@ -8,9 +8,27 @@ import {
   validateRepository,
 } from "./lib/yaml-quality.mjs";
 
-function readReportPath(arguments_) {
+const usage = [
+  "Usage: npm run validate -- [--report <path>] [--help]",
+  "",
+  "Options:",
+  "  --report <path>  Write a JSON validation report.",
+  "  --help           Show this help message.",
+].join("\n");
+
+function readCliOptions(arguments_) {
   if (arguments_.length === 0) {
-    return null;
+    return { reportPath: null, showHelp: false };
+  }
+
+  if (arguments_[0] === "--help") {
+    const extraArgument = arguments_[1];
+
+    if (extraArgument) {
+      throw new Error(`Unexpected argument: ${extraArgument}`);
+    }
+
+    return { reportPath: null, showHelp: true };
   }
 
   if (arguments_[0] !== "--report") {
@@ -29,31 +47,36 @@ function readReportPath(arguments_) {
     throw new Error(`Unexpected argument: ${extraArgument}`);
   }
 
-  return path.resolve(reportPath);
+  return { reportPath: path.resolve(reportPath), showHelp: false };
 }
 
-const reportPath = readReportPath(process.argv.slice(2));
-const result = await validateRepository();
+const options = readCliOptions(process.argv.slice(2));
 
-if (reportPath) {
-  await mkdir(path.dirname(reportPath), { recursive: true });
-  await writeFile(
-    reportPath,
-    `${JSON.stringify(createValidationReport(result), null, 2)}\n`,
-  );
-  console.log(`Validation report written to ${reportPath}.`);
-}
+if (options.showHelp) {
+  console.log(usage);
+} else {
+  const result = await validateRepository();
 
-if (result.errors.length > 0) {
-  console.error("YAML quality gate failed:\n");
-
-  for (const error of result.errors) {
-    console.error(`- ${error}`);
+  if (options.reportPath) {
+    await mkdir(path.dirname(options.reportPath), { recursive: true });
+    await writeFile(
+      options.reportPath,
+      `${JSON.stringify(createValidationReport(result), null, 2)}\n`,
+    );
+    console.log(`Validation report written to ${options.reportPath}.`);
   }
 
-  process.exitCode = 1;
-} else {
-  console.log(
-    `YAML quality gate passed for ${result.files.length} files; ${result.contractFiles.length} contract-covered files checked.`,
-  );
+  if (result.errors.length > 0) {
+    console.error("YAML quality gate failed:\n");
+
+    for (const error of result.errors) {
+      console.error(`- ${error}`);
+    }
+
+    process.exitCode = 1;
+  } else {
+    console.log(
+      `YAML quality gate passed for ${result.files.length} files; ${result.contractFiles.length} contract-covered files checked.`,
+    );
+  }
 }

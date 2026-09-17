@@ -284,6 +284,17 @@ test("rejects unknown validation CLI options", async () => {
   );
 });
 
+test("prints validation CLI help", async () => {
+  const { stdout } = await execFileAsync(process.execPath, [
+    path.join(projectRoot, "scripts", "validate-yaml.mjs"),
+    "--help",
+  ]);
+
+  assert.match(stdout, /Usage: npm run validate -- \[--report <path>\]/);
+  assert.match(stdout, /--report <path>\s+Write a JSON validation report\./);
+  assert.match(stdout, /--help\s+Show this help message\./);
+});
+
 test("reports YAML syntax errors with the repository path", async () => {
   await withFixture(async (fixtureRoot) => {
     await writeFile(
