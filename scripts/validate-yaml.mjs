@@ -50,7 +50,16 @@ function readCliOptions(arguments_) {
   return { reportPath: path.resolve(reportPath), showHelp: false };
 }
 
-const options = readCliOptions(process.argv.slice(2));
+let options;
+
+try {
+  options = readCliOptions(process.argv.slice(2));
+} catch (error) {
+  console.error(error.message);
+  console.error("");
+  console.error(usage);
+  process.exit(1);
+}
 
 if (options.showHelp) {
   console.log(usage);

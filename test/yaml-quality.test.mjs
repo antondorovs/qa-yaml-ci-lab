@@ -284,6 +284,25 @@ test("rejects unknown validation CLI options", async () => {
   );
 });
 
+test("prints validation CLI usage for option errors", async () => {
+  await assert.rejects(
+    execFileAsync(process.execPath, [
+      path.join(projectRoot, "scripts", "validate-yaml.mjs"),
+      "--reports",
+    ]),
+    (error) => {
+      assert.equal(error.code, 1);
+      assert.match(error.stderr, /^Unknown option: --reports/);
+      assert.match(
+        error.stderr,
+        /Usage: npm run validate -- \[--report <path>\]/,
+      );
+      assert.doesNotMatch(error.stderr, /at readCliOptions/);
+      return true;
+    },
+  );
+});
+
 test("prints validation CLI help", async () => {
   const { stdout } = await execFileAsync(process.execPath, [
     path.join(projectRoot, "scripts", "validate-yaml.mjs"),
